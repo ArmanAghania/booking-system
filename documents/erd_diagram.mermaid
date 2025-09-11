@@ -1,0 +1,113 @@
+erDiagram
+    User {
+        id INTEGER PK
+        username VARCHAR
+        email VARCHAR
+        first_name VARCHAR
+        last_name VARCHAR
+        user_type VARCHAR
+        phone_number VARCHAR
+        wallet_balance DECIMAL
+        created_at DATETIME
+        updated_at DATETIME
+    }
+    
+    Specialty {
+        id INTEGER PK
+        name VARCHAR
+        description TEXT
+        created_at DATETIME
+    }
+    
+    Doctor {
+        id INTEGER PK
+        user_id INTEGER FK
+        specialty_id INTEGER FK
+        license_number VARCHAR
+        experience_years INTEGER
+        bio TEXT
+        consultation_fee DECIMAL
+        is_active BOOLEAN
+        average_rating DECIMAL
+        total_reviews INTEGER
+        created_by_id INTEGER FK
+        created_at DATETIME
+        updated_at DATETIME
+    }
+    
+    TimeSlot {
+        id INTEGER PK
+        doctor_id INTEGER FK
+        date DATE
+        start_time TIME
+        end_time TIME
+        is_available BOOLEAN
+        created_by_id INTEGER FK
+        created_at DATETIME
+    }
+    
+    Appointment {
+        id INTEGER PK
+        patient_id INTEGER FK
+        doctor_id INTEGER FK
+        time_slot_id INTEGER FK
+        status VARCHAR
+        consultation_fee DECIMAL
+        notes TEXT
+        confirmation_sent BOOLEAN
+        created_at DATETIME
+        updated_at DATETIME
+    }
+    
+    Payment {
+        id INTEGER PK
+        appointment_id INTEGER FK
+        amount DECIMAL
+        status VARCHAR
+        transaction_id VARCHAR
+        paid_at DATETIME
+        created_at DATETIME
+    }
+    
+    Review {
+        id INTEGER PK
+        appointment_id INTEGER FK
+        patient_id INTEGER FK
+        doctor_id INTEGER FK
+        rating INTEGER
+        comment TEXT
+        is_anonymous BOOLEAN
+        created_at DATETIME
+        updated_at DATETIME
+    }
+    
+    WalletTransaction {
+        id INTEGER PK
+        user_id INTEGER FK
+        transaction_type VARCHAR
+        amount DECIMAL
+        description VARCHAR
+        balance_after DECIMAL
+        appointment_id INTEGER FK
+        created_at DATETIME
+    }
+
+    %% Relationships
+    User ||--o{ Doctor : "created_by"
+    User ||--o| Doctor : "user_profile"
+    User ||--o{ TimeSlot : "created_by"
+    User ||--o{ Appointment : "patient"
+    User ||--o{ Review : "reviews_given"
+    User ||--o{ WalletTransaction : "transactions"
+    
+    Specialty ||--o{ Doctor : "specialty"
+    
+    Doctor ||--o{ TimeSlot : "available_times"
+    Doctor ||--o{ Appointment : "appointments"
+    Doctor ||--o{ Review : "reviews_received"
+    
+    TimeSlot ||--|| Appointment : "booked_slot"
+    
+    Appointment ||--|| Payment : "payment"
+    Appointment ||--o| Review : "review"
+    Appointment ||--o{ WalletTransaction : "related_transaction"
