@@ -16,7 +16,7 @@ Before setting up the project, ensure you have the following installed on your s
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/ArmanAghania/booking-system.git
 cd booking-system
 ```
 
