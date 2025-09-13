@@ -1,0 +1,222 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Home - Booking System{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="bg-gradient-to-r from-primary-600 to-primary-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-6xl font-bold text-white mb-6">
+                Find Your Perfect Doctor
+            </h1>
+            <p class="text-xl text-primary-100 mb-8 max-w-3xl mx-auto">
+                Book appointments with qualified healthcare professionals. 
+                Easy, fast, and reliable healthcare services at your fingertips.
+            </p>
+            
+            <!-- Search Bar -->
+            <div class="max-w-4xl mx-auto">
+                <form method="get" class="bg-white rounded-lg shadow-xl p-6">
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <!-- Search Input -->
+                        <div class="flex-1">
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-search text-gray-400"></i>
+                                </div>
+                                <input 
+                                    type="text" 
+                                    name="q" 
+                                    value="{{ query }}"
+                                    placeholder="Search doctors, specialties, or symptoms..."
+                                    class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 text-lg"
+                                >
+                            </div>
+                        </div>
+                        
+                        <!-- Specialty Filter -->
+                        <div class="md:w-64">
+                            <select 
+                                name="specialty" 
+                                class="block w-full px-3 py-3 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 text-lg"
+                            >
+                                <option value="">All Specialties</option>
+                                {% for specialty in specialties %}
+                                    <option value="{{ specialty.id }}" {% if specialty_filter == specialty.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ specialty.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <!-- Search Button -->
+                        <div class="md:w-auto">
+                            <button 
+                                type="submit" 
+                                class="w-full md:w-auto bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-8 rounded-md transition-colors duration-200 flex items-center justify-center"
+                            >
+                                <i class="fas fa-search mr-2"></i>
+                                Search
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<div class="bg-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <div class="bg-primary-50 rounded-lg p-6">
+                <div class="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-user-md text-white text-xl"></i>
+                </div>
+                <h3 class="text-3xl font-bold text-gray-900 mb-2">{{ total_doctors }}</h3>
+                <p class="text-gray-600">Qualified Doctors</p>
+            </div>
+            
+            <div class="bg-green-50 rounded-lg p-6">
+                <div class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-stethoscope text-white text-xl"></i>
+                </div>
+                <h3 class="text-3xl font-bold text-gray-900 mb-2">{{ specialties.count }}</h3>
+                <p class="text-gray-600">Medical Specialties</p>
+            </div>
+            
+            <div class="bg-blue-50 rounded-lg p-6">
+                <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-calendar-check text-white text-xl"></i>
+                </div>
+                <h3 class="text-3xl font-bold text-gray-900 mb-2">24/7</h3>
+                <p class="text-gray-600">Online Booking</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Doctors Section -->
+{% if doctors %}
+<div class="bg-gray-50 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">
+                {% if query or specialty_filter %}
+                    Search Results
+                {% else %}
+                    Featured Doctors
+                {% endif %}
+            </h2>
+            <p class="text-lg text-gray-600">
+                {% if query or specialty_filter %}
+                    Found {{ doctors.count }} doctor{{ doctors.count|pluralize }} matching your search
+                {% else %}
+                    Meet our experienced healthcare professionals
+                {% endif %}
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for doctor in doctors %}
+            <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+                <div class="p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user-md text-primary-600 text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-lg font-semibold text-gray-900">
+                                Dr. {{ doctor.user.first_name }} {{ doctor.user.last_name }}
+                            </h3>
+                            <p class="text-primary-600 font-medium">{{ doctor.specialty.name }}</p>
+                        </div>
+                    </div>
+                    
+                    <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+                        {{ doctor.bio|truncatewords:20 }}
+                    </p>
+                    
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center">
+                            <div class="flex text-yellow-400">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= doctor.average_rating %}
+                                        <i class="fas fa-star"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <span class="ml-2 text-sm text-gray-600">
+                                {{ doctor.average_rating|floatformat:1 }} ({{ doctor.total_reviews }} reviews)
+                            </span>
+                        </div>
+                        <span class="text-lg font-bold text-primary-600">
+                            ${{ doctor.consultation_fee }}
+                        </span>
+                    </div>
+                    
+                    <div class="flex space-x-2">
+                        <a href="{% url 'doctors:detail' doctor.id %}" class="flex-1 bg-primary-600 hover:bg-primary-700 text-white text-center py-2 px-4 rounded-md text-sm font-medium transition-colors duration-200">
+                            View Profile
+                        </a>
+                        <a href="{% url 'appointments:book' doctor.id %}" class="flex-1 bg-green-600 hover:bg-green-700 text-white text-center py-2 px-4 rounded-md text-sm font-medium transition-colors duration-200">
+                            Book Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if query or specialty_filter %}
+        <div class="text-center mt-8">
+            <a href="{% url 'doctors:list' %}?q={{ query }}&specialty={{ specialty_filter }}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-primary-600 bg-primary-100 hover:bg-primary-200 transition-colors duration-200">
+                View All Results
+                <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<!-- How It Works Section -->
+<div class="bg-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">How It Works</h2>
+            <p class="text-lg text-gray-600">Get started in just a few simple steps</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-primary-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-white text-2xl font-bold">1</span>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Search & Find</h3>
+                <p class="text-gray-600">Search for doctors by name, specialty, or location. Browse profiles and read reviews.</p>
+            </div>
+            
+            <div class="text-center">
+                <div class="w-16 h-16 bg-primary-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-white text-2xl font-bold">2</span>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Book Appointment</h3>
+                <p class="text-gray-600">Choose your preferred date and time. Book instantly with our secure system.</p>
+            </div>
+            
+            <div class="text-center">
+                <div class="w-16 h-16 bg-primary-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-white text-2xl font-bold">3</span>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Get Treatment</h3>
+                <p class="text-gray-600">Attend your appointment and receive quality healthcare from qualified professionals.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
