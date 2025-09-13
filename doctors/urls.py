@@ -6,6 +6,7 @@ app_name = "doctors"
 urlpatterns = [
     # Doctor URLs
     path("", views.DoctorListView.as_view(), name="doctor_list"),
+    path("doctors/create/", views.DoctorCreateView.as_view(), name="doctor_create"),
     path(
         "doctors/<int:doctor_id>/",
         views.DoctorDetailView.as_view(),

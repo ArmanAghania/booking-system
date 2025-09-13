@@ -16,7 +16,7 @@ from django.views.generic import (
 from django.urls import reverse_lazy, reverse
 
 from .models import Specialty, Doctor
-from .forms import SpecialtyForm
+from .forms import SpecialtyForm, DoctorCreationForm
 from .mixins import AdminRequiredMixin, is_admin_user
 
 
@@ -171,8 +171,10 @@ class DoctorListView(ListView):
 
     def get_queryset(self):
         """Filter doctors based on search query and specialty filter."""
-        queryset = Doctor.objects.filter(is_active=True).select_related(
-            "user", "specialty"
+        queryset = (
+            Doctor.objects.filter(is_active=True)
+            .select_related("user", "specialty")
+            .order_by("user__last_name", "user__first_name")
         )
 
         # Search functionality
@@ -212,4 +214,37 @@ class DoctorDetailView(DetailView):
 
     def get_queryset(self):
         """Only show active doctors."""
-        return Doctor.objects.filter(is_active=True).select_related("user", "specialty")
+        return (
+            Doctor.objects.filter(is_active=True)
+            .select_related("user", "specialty")
+            .order_by("user__last_name", "user__first_name")
+        )
+
+
+class DoctorCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
+    """Create a new doctor (admin only)."""
+
+    model = Doctor
+    form_class = DoctorCreationForm
+    template_name = "doctors/doctor_form.html"
+
+    def get_context_data(self, **kwargs):
+        """Add form context."""
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Create New Doctor"
+        context["submit_text"] = "Create Doctor"
+        context["specialties"] = Specialty.objects.all().order_by("name")
+        return context
+
+    def form_valid(self, form):
+        """Handle successful form submission."""
+        response = super().form_valid(form)
+        messages.success(
+            self.request,
+            f'Doctor "{self.object.user.get_full_name()}" created successfully!',
+        )
+        return response
+
+    def get_success_url(self):
+        """Redirect to doctor detail page."""
+        return reverse("doctors:doctor_detail", kwargs={"doctor_id": self.object.id})

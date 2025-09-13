@@ -21,6 +21,9 @@
                     <a href="{% url 'doctors:doctor_list' %}" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
                         Doctors
                     </a>
+                    <a href="{% url 'doctors:specialty_list' %}" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
+                        Specialties
+                    </a>
                     <a href="#" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
                         Appointments (Coming Soon)
                     </a>
@@ -50,8 +53,14 @@
                             <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                 <i class="fas fa-calendar mr-2"></i>My Appointments (Coming Soon)
                             </a>
-                            {% if user.is_staff %}
+                            {% if user.is_superuser or user.user_type == 'admin' %}
                                 <div class="border-t border-gray-100"></div>
+                                <a href="{% url 'doctors:doctor_create' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-user-md mr-2"></i>Create Doctor
+                                </a>
+                                <a href="{% url 'doctors:specialty_create' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-stethoscope mr-2"></i>Create Specialty
+                                </a>
                                 <a href="{% url 'admin:index' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                     <i class="fas fa-cog mr-2"></i>Admin Panel
                                 </a>
@@ -93,6 +102,9 @@
             <a href="{% url 'doctors:doctor_list' %}" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                 Doctors
             </a>
+            <a href="{% url 'doctors:specialty_list' %}" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                Specialties
+            </a>
             <a href="#" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                 Appointments (Coming Soon)
             </a>
@@ -117,7 +129,13 @@
                     <a href="#" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
                         My Appointments (Coming Soon)
                     </a>
-                    {% if user.is_staff %}
+                    {% if user.is_superuser or user.user_type == 'admin' %}
+                        <a href="{% url 'doctors:doctor_create' %}" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
+                            Create Doctor
+                        </a>
+                        <a href="{% url 'doctors:specialty_create' %}" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
+                            Create Specialty
+                        </a>
                         <a href="{% url 'admin:index' %}" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
                             Admin Panel
                         </a>

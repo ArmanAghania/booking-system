@@ -1078,3 +1078,79 @@ class DoctorViewTest(TestCase):
         )
 
         self.assertEqual(response.status_code, 404)
+
+    def test_doctor_create_view_requires_login(self):
+        """Test that doctor create view requires login."""
+        response = self.client.get(reverse("doctors:doctor_create"))
+
+        self.assertEqual(response.status_code, 302)  # Redirect to login
+
+    def test_doctor_create_view_requires_admin(self):
+        """Test that doctor create view requires admin permissions."""
+        # Create a regular user
+        regular_user = User.objects.create_user(
+            username="patient",
+            email="patient@test.com",
+            password="testpass123",
+            user_type="patient",
+        )
+
+        self.client.login(username="patient", password="testpass123")
+        response = self.client.get(reverse("doctors:doctor_create"))
+
+        self.assertEqual(response.status_code, 302)  # Redirect due to permission denied
+
+    def test_doctor_create_view_admin_access(self):
+        """Test that admin users can access doctor create view."""
+        self.client.login(username="admin", password="testpass123")
+        response = self.client.get(reverse("doctors:doctor_create"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "doctors/doctor_form.html")
+
+    def test_doctor_create_view_post_valid(self):
+        """Test doctor create view with valid POST data."""
+        self.client.login(username="admin", password="testpass123")
+
+        data = {
+            "first_name": "Jane",
+            "last_name": "Doe",
+            "email": "jane.doe@test.com",
+            "username": "jane_doe",
+            "phone_number": "+1234567890",
+            "specialty": self.cardiology.id,
+            "license_number": "LIC456",
+            "experience_years": 3,
+            "bio": "Experienced cardiologist with 3 years of practice",
+            "consultation_fee": 150.00,
+            "is_active": True,
+        }
+
+        response = self.client.post(reverse("doctors:doctor_create"), data)
+
+        self.assertEqual(
+            response.status_code, 302
+        )  # Redirect after successful creation
+        self.assertTrue(Doctor.objects.filter(user__username="jane_doe").exists())
+
+    def test_doctor_create_view_post_invalid(self):
+        """Test doctor create view with invalid POST data."""
+        self.client.login(username="admin", password="testpass123")
+
+        data = {
+            "first_name": "",  # Invalid: empty name
+            "last_name": "Doe",
+            "email": "invalid-email",  # Invalid email
+            "username": "jane_doe",
+            "specialty": self.cardiology.id,
+            "license_number": "LIC456",
+            "experience_years": -1,  # Invalid: negative experience
+            "bio": "Test bio",
+            "consultation_fee": -50.00,  # Invalid: negative fee
+            "is_active": True,
+        }
+
+        response = self.client.post(reverse("doctors:doctor_create"), data)
+
+        self.assertEqual(response.status_code, 200)  # Form with errors
+        self.assertFalse(Doctor.objects.filter(user__username="jane_doe").exists())
