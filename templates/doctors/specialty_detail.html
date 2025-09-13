@@ -1,0 +1,194 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}{{ specialty.name }} - Medical Specialty - Booking System{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-8">
+        <ol class="flex items-center space-x-2 text-sm text-gray-500">
+            <li><a href="{% url 'doctors:specialty_list' %}" class="hover:text-primary-600">Specialties</a></li>
+            <li class="flex items-center">
+                <svg class="w-4 h-4 mx-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                </svg>
+                {{ specialty.name }}
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Header Section -->
+    <div class="flex justify-between items-start mb-12">
+        <div>
+            <h1 class="text-4xl font-bold text-gray-900 mb-4 flex items-center">
+                <div class="bg-primary-100 p-4 rounded-xl mr-4">
+                    <i class="fas fa-stethoscope text-primary-600 text-2xl"></i>
+                </div>
+                {{ specialty.name }}
+            </h1>
+            <p class="text-xl text-gray-600 mb-2">
+                {{ doctor_count }} doctor{{ doctor_count|pluralize }} available in this specialty
+            </p>
+            <p class="text-gray-500">
+                Find experienced specialists in {{ specialty.name|lower }} to meet your healthcare needs
+            </p>
+        </div>
+        {% if user.is_authenticated and user.is_superuser or user.user_type == 'admin' %}
+            <div class="flex gap-3">
+                <a href="{% url 'doctors:specialty_update' specialty.id %}" 
+                   class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg flex items-center">
+                    <i class="fas fa-edit mr-2"></i>Edit
+                </a>
+                <a href="{% url 'doctors:specialty_delete' specialty.id %}" 
+                   class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg flex items-center">
+                    <i class="fas fa-trash mr-2"></i>Delete
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Specialty Information -->
+        <div class="lg:col-span-1">
+            <div class="bg-white shadow-xl rounded-xl border border-gray-100 sticky top-8">
+                <div class="px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-primary-50 to-blue-50">
+                    <h2 class="text-xl font-semibold text-gray-900 flex items-center">
+                        <div class="bg-primary-100 p-2 rounded-lg mr-3">
+                            <i class="fas fa-info-circle text-primary-600"></i>
+                        </div>
+                        Specialty Info
+                    </h2>
+                </div>
+                
+                <div class="p-8">
+                    <!-- Doctor Count -->
+                    <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-primary-600 mb-2">{{ doctor_count }}</div>
+                            <div class="text-sm text-gray-600">Available Doctors</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="space-y-3">
+                        <a href="{% url 'doctors:doctor_list' %}?specialty={{ specialty.id }}" 
+                           class="w-full bg-primary-600 hover:bg-primary-700 text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center">
+                            <i class="fas fa-user-md mr-2"></i>View All Doctors
+                        </a>
+                        <a href="{% url 'doctors:doctor_list' %}" 
+                           class="w-full bg-gray-500 hover:bg-gray-600 text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center">
+                            <i class="fas fa-list mr-2"></i>All Specialties
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="lg:col-span-2 space-y-8">
+            <!-- Specialty Description -->
+            <div class="bg-white shadow-xl rounded-xl border border-gray-100">
+                <div class="px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+                        <div class="bg-blue-100 p-3 rounded-lg mr-4">
+                            <i class="fas fa-file-medical text-blue-600"></i>
+                        </div>
+                        About {{ specialty.name }}
+                    </h2>
+                </div>
+                <div class="p-8">
+                    <div class="prose max-w-none">
+                        <p class="text-gray-700 leading-relaxed text-lg">{{ specialty.description }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Available Doctors -->
+            {% if doctors %}
+                <div class="bg-white shadow-xl rounded-xl border border-gray-100">
+                    <div class="px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50">
+                        <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+                            <div class="bg-green-100 p-3 rounded-lg mr-4">
+                                <i class="fas fa-user-md text-green-600"></i>
+                            </div>
+                            Available Doctors
+                        </h2>
+                    </div>
+                    <div class="p-8">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {% for doctor in doctors %}
+                                <div class="bg-gray-50 rounded-lg p-6 hover:bg-gray-100 transition-colors duration-200">
+                                    <div class="flex items-start space-x-4">
+                                        <!-- Doctor Avatar -->
+                                        <div class="bg-primary-600 text-white rounded-full w-12 h-12 flex items-center justify-center flex-shrink-0">
+                                            <i class="fas fa-user-md"></i>
+                                        </div>
+                                        
+                                        <!-- Doctor Info -->
+                                        <div class="flex-1 min-w-0">
+                                            <h3 class="text-lg font-semibold text-gray-900 mb-1">
+                                                Dr. {{ doctor.user.get_full_name }}
+                                            </h3>
+                                            <div class="flex items-center text-sm text-gray-600 mb-2">
+                                                <i class="fas fa-clock mr-1"></i>
+                                                {{ doctor.experience_years }} years experience
+                                            </div>
+                                            <div class="flex items-center text-sm text-gray-600 mb-3">
+                                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                                {{ doctor.average_rating|floatformat:1 }} rating
+                                            </div>
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-sm font-medium text-primary-600">
+                                                    ${{ doctor.consultation_fee }}
+                                                </span>
+                                                <a href="{% url 'doctors:doctor_detail' doctor.id %}" 
+                                                   class="text-primary-600 hover:text-primary-700 text-sm font-medium">
+                                                    View Profile <i class="fas fa-arrow-right ml-1"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- View All Doctors Link -->
+                        <div class="mt-6 text-center">
+                            <a href="{% url 'doctors:doctor_list' %}?specialty={{ specialty.id }}" 
+                               class="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 rounded-lg text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg inline-flex items-center">
+                                <i class="fas fa-user-md mr-2"></i>View All {{ specialty.name }} Doctors
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <!-- No Doctors Available -->
+                <div class="bg-white shadow-xl rounded-xl border border-gray-100">
+                    <div class="px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-yellow-50 to-orange-50">
+                        <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+                            <div class="bg-yellow-100 p-3 rounded-lg mr-4">
+                                <i class="fas fa-exclamation-triangle text-yellow-600"></i>
+                            </div>
+                            No Doctors Available
+                        </h2>
+                    </div>
+                    <div class="p-8">
+                        <div class="text-center py-12">
+                            <div class="bg-gray-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-user-md text-2xl text-gray-400"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">No Doctors Found</h3>
+                            <p class="text-gray-600 mb-6">There are currently no doctors available in the {{ specialty.name }} specialty.</p>
+                            <a href="{% url 'doctors:doctor_list' %}" 
+                               class="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 rounded-lg text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg inline-flex items-center">
+                                <i class="fas fa-list mr-2"></i>View All Doctors
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
