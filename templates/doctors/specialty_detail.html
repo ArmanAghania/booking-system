@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ specialty.name }} - Medical Specialty</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8">
+        <div class="flex justify-between items-start">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ specialty.name }}</h1>
+                <p class="text-gray-600">
+                    {{ doctor_count }} doctor{{ doctor_count|pluralize }} in this specialty
+                </p>
+            </div>
+            {% if user.is_authenticated and user.is_superuser or user.user_type == 'admin' %}
+                <div class="flex gap-2">
+                    <a href="{% url 'doctors:specialty_update' specialty.id %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                        Edit
+                    </a>
+                    <a href="{% url 'doctors:specialty_delete' specialty.id %}" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                        Delete
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Specialty Description -->
+    <div class="bg-white shadow rounded-lg mb-6">
+        <div class="p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">About {{ specialty.name }}</h2>
+            <p class="text-gray-700">{{ specialty.description|linebreaks }}</p>
+        </div>
+    </div>
+
+    <!-- Doctors in this Specialty -->
+    <div class="bg-white shadow rounded-lg">
+        <div class="p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Doctors in {{ specialty.name }}</h2>
+            {% if doctors %}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {% for doctor in doctors %}
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <h3 class="font-semibold text-gray-900 mb-2">
+                                Dr. {{ doctor.user.first_name }} {{ doctor.user.last_name }}
+                            </h3>
+                            <p class="text-gray-600 text-sm mb-2">
+                                {{ doctor.bio|truncatewords:15 }}
+                            </p>
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-500">
+                                    {{ doctor.average_rating|floatformat:1 }}/5.0
+                                </span>
+                                <span class="text-gray-500">
+                                    ${{ doctor.consultation_fee }}
+                                </span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8">
+                    <p class="text-gray-500">No doctors in this specialty yet.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Back to Specialties -->
+    <div class="mt-6">
+        <a href="{% url 'doctors:specialty_list' %}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+            Back to All Specialties
+        </a>
+    </div>
+</div>
+</body>
+</html>

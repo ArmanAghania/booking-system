@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Medical Specialties{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+{% load static %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8">
+        <div class="flex justify-between items-center">
+            <h1 class="text-3xl font-bold text-gray-900">Medical Specialties</h1>
+            {% if user.is_authenticated and user.is_superuser or user.user_type == 'admin' %}
+                <a href="{% url 'doctors:specialty_create' %}" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                    Add New Specialty
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Search Form -->
+    <div class="bg-white shadow rounded-lg mb-6">
+        <div class="p-6">
+            <form method="get" class="flex gap-4">
+                <input type="text" 
+                       class="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500" 
+                       name="search" 
+                       value="{{ search_query }}" 
+                       placeholder="Search specialties by name or description...">
+                <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                    Search
+                </button>
+                {% if search_query %}
+                    <a href="{% url 'doctors:specialty_list' %}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium">
+                        Clear
+                    </a>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Summary -->
+    <div class="mb-4">
+        <p class="text-gray-600">
+            Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} specialties
+            {% if search_query %}
+                matching "{{ search_query }}"
+            {% endif %}
+        </p>
+    </div>
+
+    <!-- Specialties Grid -->
+    {% if specialties %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for specialty in specialties %}
+                <div class="bg-white shadow rounded-lg overflow-hidden">
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                            <a href="{% url 'doctors:specialty_detail' specialty.id %}" class="hover:text-primary-600">
+                                {{ specialty.name }}
+                            </a>
+                        </h3>
+                        <p class="text-gray-600 text-sm mb-4">
+                            {{ specialty.description|truncatewords:20 }}
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500">
+                                {{ specialty.doctor_set.count }} doctor{{ specialty.doctor_set.count|pluralize }}
+                            </span>
+                            <a href="{% url 'doctors:specialty_detail' specialty.id %}" class="text-primary-600 hover:text-primary-700 text-sm font-medium">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-6 py-3">
+                        <p class="text-xs text-gray-500">
+                            Created: {{ specialty.created_at|date:"M d, Y" }}
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+            <div class="mt-8 flex justify-center">
+                <nav class="flex items-center space-x-2">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}" class="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">
+                            First
+                        </a>
+                        <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" class="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">
+                            Previous
+                        </a>
+                    {% endif %}
+
+                    <span class="px-3 py-2 text-sm font-medium text-gray-900">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                    </span>
+
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" class="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">
+                            Next
+                        </a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}" class="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">
+                            Last
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="text-center py-12">
+            <div class="text-gray-400 text-6xl mb-4">🏥</div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">No specialties found</h3>
+            {% if search_query %}
+                <p class="text-gray-600 mb-4">No specialties match your search criteria.</p>
+                <a href="{% url 'doctors:specialty_list' %}" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                    View All Specialties
+                </a>
+            {% else %}
+                <p class="text-gray-600 mb-4">No medical specialties have been added yet.</p>
+                {% if user.is_authenticated and user.is_superuser or user.user_type == 'admin' %}
+                    <a href="{% url 'doctors:specialty_create' %}" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                        Add First Specialty
+                    </a>
+                {% endif %}
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+</body>
+</html>

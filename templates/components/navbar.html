@@ -18,11 +18,11 @@
                     <a href="{% url 'core:home' %}" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
                         Home
                     </a>
-                    <a href="{% url 'doctors:list' %}" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
+                    <a href="{% url 'doctors:doctor_list' %}" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
                         Doctors
                     </a>
-                    <a href="{% url 'appointments:list' %}" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
-                        Appointments
+                    <a href="#" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
+                        Appointments (Coming Soon)
                     </a>
                 </div>
             </div>
@@ -47,8 +47,8 @@
                             <a href="{% url 'accounts:profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                 <i class="fas fa-user mr-2"></i>Profile
                             </a>
-                            <a href="{% url 'appointments:my_appointments' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                <i class="fas fa-calendar mr-2"></i>My Appointments
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-calendar mr-2"></i>My Appointments (Coming Soon)
                             </a>
                             {% if user.is_staff %}
                                 <div class="border-t border-gray-100"></div>
@@ -90,11 +90,11 @@
             <a href="{% url 'core:home' %}" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                 Home
             </a>
-            <a href="{% url 'doctors:list' %}" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+            <a href="{% url 'doctors:doctor_list' %}" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                 Doctors
             </a>
-            <a href="{% url 'appointments:list' %}" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
-                Appointments
+            <a href="#" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                Appointments (Coming Soon)
             </a>
         </div>
         
@@ -114,8 +114,8 @@
                     <a href="{% url 'accounts:profile' %}" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
                         Profile
                     </a>
-                    <a href="{% url 'appointments:my_appointments' %}" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
-                        My Appointments
+                    <a href="#" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
+                        My Appointments (Coming Soon)
                     </a>
                     {% if user.is_staff %}
                         <a href="{% url 'admin:index' %}" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
