@@ -8,6 +8,12 @@
 ### Epic 4: Payment & Wallet System (30 story points)
 ### Epic 5: Review & Rating System (25 story points)
 ### Epic 6: Production Deployment & DevOps (20 story points)
+### Epic 7: Frontend & Design System (30 story points)
+### Epic 8: Advanced Appointment Management (25 story points)
+### Epic 9: Enhanced User Experience (20 story points)
+### Epic 10: Security & Privacy Enhancements (15 story points)
+### Epic 11: Analytics & Reporting (12 story points)
+### Epic 12: Performance & Technical Improvements (10 story points)
 
 ---
 
@@ -539,6 +545,361 @@
 
 ---
 
+## Sprint 9: UI/UX Polish (2 weeks) - 30 points
+
+### Epic 7: Frontend & Design System
+
+#### US-025: Design System & Component Library (8 points)
+**As a** developer  
+**I want** a consistent design system  
+**So that** the UI is cohesive and maintainable  
+
+**Acceptance Criteria:**
+- [ ] CSS framework integration (Bootstrap 5 or Tailwind CSS)
+- [ ] Color palette and typography guidelines
+- [ ] Reusable component library (buttons, forms, cards)
+- [ ] Responsive grid system
+- [ ] Dark/light theme support
+
+**Definition of Done:**
+- Design system documented
+- Component library implemented
+- Consistent styling across all pages
+- Theme switching works
+- Tests for component functionality
+
+---
+
+#### US-026: Modern Landing Page (5 points)
+**As a** visitor  
+**I want** an attractive landing page  
+**So that** I understand the service and want to use it  
+
+**Acceptance Criteria:**
+- [ ] Hero section with clear value proposition
+- [ ] Features showcase
+- [ ] Doctor testimonials/reviews preview
+- [ ] Call-to-action buttons
+- [ ] Mobile-responsive design
+
+**Definition of Done:**
+- Landing page created
+- All sections implemented
+- Mobile responsive
+- Performance optimized
+- Tests for page rendering
+
+---
+
+#### US-027: Enhanced Dashboard Design (8 points)
+**As a** user  
+**I want** an intuitive dashboard  
+**So that** I can easily navigate and manage my appointments  
+
+**Acceptance Criteria:**
+- [ ] Clean, modern dashboard layout
+- [ ] Quick stats cards (upcoming appointments, wallet balance)
+- [ ] Recent activity feed
+- [ ] Quick action buttons
+- [ ] Appointment calendar widget
+
+**Definition of Done:**
+- Dashboard redesigned
+- All widgets functional
+- Responsive layout
+- Performance optimized
+- Tests for dashboard features
+
+---
+
+#### US-028: Mobile-First Responsive Design (9 points)
+**As a** mobile user  
+**I want** the app to work perfectly on my phone  
+**So that** I can book appointments anywhere  
+
+**Acceptance Criteria:**
+- [ ] Mobile-optimized navigation
+- [ ] Touch-friendly buttons and forms
+- [ ] Swipe gestures for appointment browsing
+- [ ] Mobile-specific layouts
+- [ ] Progressive Web App (PWA) features
+
+**Definition of Done:**
+- All pages mobile responsive
+- Touch interactions work
+- PWA features implemented
+- Performance on mobile optimized
+- Tests for mobile functionality
+
+---
+
+## Sprint 10: Advanced Features (2 weeks) - 25 points
+
+### Epic 8: Advanced Appointment Management
+
+#### US-029: Appointment Rescheduling (8 points)
+**As a** patient  
+**I want** to reschedule my appointments  
+**So that** I can adjust to schedule changes  
+
+**Acceptance Criteria:**
+- [ ] Reschedule button on appointment details
+- [ ] Available time slot picker
+- [ ] Automatic notification to doctor
+- [ ] Reschedule history tracking
+- [ ] Cancellation policy enforcement
+
+**Definition of Done:**
+- Rescheduling functionality works
+- Notifications sent correctly
+- History tracking implemented
+- Policy enforcement in place
+- Tests for rescheduling flow
+
+---
+
+#### US-030: Waitlist System (10 points)
+**As a** patient  
+**I want** to join a waitlist for fully booked doctors  
+**So that** I can get notified when slots become available  
+
+**Acceptance Criteria:**
+- [ ] Waitlist enrollment for full schedules
+- [ ] Automatic notifications when slots open
+- [ ] Priority queue management
+- [ ] Waitlist position tracking
+- [ ] Auto-booking option
+
+**Definition of Done:**
+- Waitlist system implemented
+- Notifications work correctly
+- Queue management functional
+- Auto-booking option available
+- Tests for waitlist scenarios
+
+---
+
+#### US-031: Recurring Appointments (7 points)
+**As a** patient  
+**I want** to book recurring appointments  
+**So that** I don't have to book each visit separately  
+
+**Acceptance Criteria:**
+- [ ] Recurring appointment options (weekly, monthly)
+- [ ] Bulk time slot creation
+- [ ] Individual appointment modification
+- [ ] Recurring series management
+- [ ] Automatic payment scheduling
+
+**Definition of Done:**
+- Recurring booking works
+- Series management functional
+- Payment scheduling automated
+- Individual modifications allowed
+- Tests for recurring appointments
+
+---
+
+## Sprint 11: User Experience (1 week) - 20 points
+
+### Epic 9: Enhanced User Experience
+
+#### US-032: Onboarding Flow (8 points)
+**As a** new user  
+**I want** a guided onboarding experience  
+**So that** I understand how to use the platform  
+
+**Acceptance Criteria:**
+- [ ] Welcome tour with tooltips
+- [ ] Step-by-step account setup
+- [ ] Feature introduction walkthrough
+- [ ] Sample data for testing
+- [ ] Help documentation access
+
+**Definition of Done:**
+- Onboarding flow implemented
+- Tour functionality works
+- Help documentation accessible
+- Sample data available
+- Tests for onboarding experience
+
+---
+
+#### US-033: Advanced Search & Filters (6 points)
+**As a** patient  
+**I want** advanced search options  
+**So that** I can find the perfect doctor quickly  
+
+**Acceptance Criteria:**
+- [ ] Search by location/distance
+- [ ] Filter by availability (today, this week)
+- [ ] Filter by consultation fee range
+- [ ] Filter by languages spoken
+- [ ] Sort by rating, experience, price
+
+**Definition of Done:**
+- Advanced search implemented
+- All filters functional
+- Sorting options work
+- Performance optimized
+- Tests for search functionality
+
+---
+
+#### US-034: Appointment Reminders (6 points)
+**As a** patient  
+**I want** multiple reminder options  
+**So that** I don't miss my appointments  
+
+**Acceptance Criteria:**
+- [ ] Email reminders (24h, 2h before)
+- [ ] SMS reminders (optional)
+- [ ] Push notifications
+- [ ] Calendar integration (Google, Outlook)
+- [ ] Reminder preferences settings
+
+**Definition of Done:**
+- Multiple reminder types work
+- Calendar integration functional
+- Preferences settings available
+- Notifications sent reliably
+- Tests for reminder system
+
+---
+
+## Sprint 12: Security & Analytics (1 week) - 27 points
+
+### Epic 10: Security & Privacy Enhancements
+
+#### US-035: Enhanced Security Features (8 points)
+**As a** user  
+**I want** my data to be secure  
+**So that** I can trust the platform with my medical information  
+
+**Acceptance Criteria:**
+- [ ] Two-factor authentication (2FA)
+- [ ] Session timeout management
+- [ ] Password strength indicators
+- [ ] Account lockout after failed attempts
+- [ ] Security audit logging
+
+**Definition of Done:**
+- 2FA implemented
+- Security features functional
+- Audit logging works
+- Account protection in place
+- Tests for security features
+
+---
+
+#### US-036: Privacy Controls (7 points)
+**As a** user  
+**I want** control over my privacy settings  
+**So that** I can manage what information is shared  
+
+**Acceptance Criteria:**
+- [ ] Privacy settings dashboard
+- [ ] Data export functionality
+- [ ] Account deletion option
+- [ ] Anonymous review options
+- [ ] GDPR compliance features
+
+**Definition of Done:**
+- Privacy dashboard implemented
+- Data export works
+- Account deletion functional
+- GDPR compliance achieved
+- Tests for privacy features
+
+---
+
+### Epic 11: Analytics & Reporting
+
+#### US-037: Admin Analytics Dashboard (8 points)
+**As an** admin  
+**I want** insights into platform usage  
+**So that** I can make data-driven decisions  
+
+**Acceptance Criteria:**
+- [ ] Appointment booking trends
+- [ ] Doctor performance metrics
+- [ ] Revenue analytics
+- [ ] User engagement statistics
+- [ ] Exportable reports
+
+**Definition of Done:**
+- Analytics dashboard created
+- All metrics displayed
+- Export functionality works
+- Data visualization clear
+- Tests for analytics features
+
+---
+
+#### US-038: Doctor Performance Insights (4 points)
+**As a** doctor  
+**I want** to see my performance metrics  
+**So that** I can improve my practice  
+
+**Acceptance Criteria:**
+- [ ] Appointment completion rates
+- [ ] Patient satisfaction scores
+- [ ] Revenue tracking
+- [ ] Popular time slots analysis
+
+**Definition of Done:**
+- Doctor dashboard implemented
+- Performance metrics displayed
+- Insights clearly presented
+- Data accuracy verified
+- Tests for doctor analytics
+
+---
+
+### Epic 12: Performance & Technical Improvements
+
+#### US-039: Performance Optimization (6 points)
+**As a** user  
+**I want** fast page loading  
+**So that** I have a smooth experience  
+
+**Acceptance Criteria:**
+- [ ] Database query optimization
+- [ ] Image compression and CDN
+- [ ] Caching implementation
+- [ ] Lazy loading for large lists
+- [ ] API response optimization
+
+**Definition of Done:**
+- Performance improvements implemented
+- Page load times optimized
+- Caching system functional
+- Database queries optimized
+- Tests for performance metrics
+
+---
+
+#### US-040: Error Handling & User Feedback (4 points)
+**As a** user  
+**I want** clear error messages  
+**So that** I understand what went wrong and how to fix it  
+
+**Acceptance Criteria:**
+- [ ] User-friendly error messages
+- [ ] Loading states and progress indicators
+- [ ] Success/error toast notifications
+- [ ] Form validation with inline feedback
+- [ ] 404 and error page designs
+
+**Definition of Done:**
+- Error handling improved
+- User feedback clear
+- Loading states implemented
+- Error pages designed
+- Tests for error scenarios
+
+---
+
 ## Definition of Ready (DoR)
 
 Before a story can be started:
@@ -576,6 +937,10 @@ Before a story can be marked complete:
 - **Release 1.0** (Sprint 6): Full MVP
 - **Release 1.1** (Sprint 7): OAuth and polish
 - **Release 1.2** (Sprint 8): Production deployment
+- **Release 1.3** (Sprint 9): UI/UX Polish
+- **Release 1.4** (Sprint 10): Advanced Features
+- **Release 1.5** (Sprint 11): Enhanced User Experience
+- **Release 2.0** (Sprint 12): Security, Analytics & Performance
 
 ## Risk Management
 
@@ -583,13 +948,27 @@ Before a story can be marked complete:
 - OAuth integration complexity
 - Payment system security
 - Email delivery reliability
+- Mobile responsiveness across devices
+- Real-time notification systems
 
 **Medium Risk:**
 - Calendar/time zone handling
 - File upload and storage
 - Performance with large datasets
+- PWA implementation complexity
+- Advanced search performance
+- Waitlist system scalability
+
+**Low Risk:**
+- UI/UX design consistency
+- Analytics data accuracy
+- Theme switching functionality
+- Form validation improvements
 
 **Mitigation:**
 - Start risky items early
 - Create technical spikes for unknowns
 - Have backup plans for external services
+- Implement progressive enhancement for mobile features
+- Use established design frameworks for consistency
+- Plan for horizontal scaling of notification systems
