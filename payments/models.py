@@ -18,6 +18,9 @@ class Payment(models.Model):
     paid_at = models.DateTimeField(auto_now_add=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"{self.appointment_id} - {self.amount} - {self.status} - {self.paid_at} - {self.created_at}"
+
 
 class WalletTransaction(models.Model):
     DEPOSIT = "deposit"
@@ -33,6 +36,9 @@ class WalletTransaction(models.Model):
     balance_after = models.DecimalField(decimal_places=2, max_digits=20)
     appointment_id = models.ForeignKey(Appointment, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user_id}, {str(self.amount)}, {self.description}, {str(self.appointment_id)}, {self.transaction_type}, {self.created_at}"
 
 
 
