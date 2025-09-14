@@ -1,0 +1,183 @@
+{% load static %}
+<nav class="bg-white shadow-sm border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <!-- Logo and main navigation -->
+            <div class="flex">
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="{% url 'core:home' %}" class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-hospital text-white text-sm"></i>
+                        </div>
+                        <span class="text-xl font-bold text-gray-900">Booking System</span>
+                    </a>
+                </div>
+                
+                <!-- Desktop navigation -->
+                <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                    <a href="{% url 'core:home' %}" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
+                        Home
+                    </a>
+                    <a href="{% url 'doctors:doctor_list' %}" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
+                        Doctors
+                    </a>
+                    <a href="{% url 'doctors:specialty_list' %}" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
+                        Specialties
+                    </a>
+                    <a href="#" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
+                        Appointments (Coming Soon)
+                    </a>
+                </div>
+            </div>
+            
+            <!-- User menu -->
+            <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                {% if user.is_authenticated %}
+                    <div class="ml-3 relative">
+                        <div>
+                            <button type="button" class="bg-white rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500" id="user-menu-button" onclick="toggleUserMenu()">
+                                <span class="sr-only">Open user menu</span>
+                                <div class="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
+                                    <i class="fas fa-user text-primary-600 text-sm"></i>
+                                </div>
+                                <span class="ml-2 text-gray-700 text-sm font-medium">{{ user.get_full_name|default:user.username }}</span>
+                                <i class="fas fa-chevron-down ml-1 text-gray-400 text-xs"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Dropdown menu -->
+                        <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden" id="user-menu">
+                            <a href="{% url 'accounts:profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-user mr-2"></i>Profile
+                            </a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-calendar mr-2"></i>My Appointments (Coming Soon)
+                            </a>
+                            {% if user.is_superuser or user.user_type == 'admin' %}
+                                <div class="border-t border-gray-100"></div>
+                                <a href="{% url 'doctors:doctor_create' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-user-md mr-2"></i>Create Doctor
+                                </a>
+                                <a href="{% url 'doctors:specialty_create' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-stethoscope mr-2"></i>Create Specialty
+                                </a>
+                                <a href="{% url 'admin:index' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-cog mr-2"></i>Admin Panel
+                                </a>
+                            {% endif %}
+                            <div class="border-t border-gray-100"></div>
+                            <a href="{% url 'accounts:logout' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                            </a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="flex items-center space-x-4">
+                        <a href="{% url 'accounts:login' %}" class="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+                            Login
+                        </a>
+                        <a href="{% url 'accounts:register' %}" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+                            Register
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Mobile menu button -->
+            <div class="-mr-2 flex items-center sm:hidden">
+                <button type="button" class="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500" onclick="toggleMobileMenu()">
+                    <span class="sr-only">Open main menu</span>
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mobile menu -->
+    <div class="sm:hidden hidden" id="mobile-menu">
+        <div class="pt-2 pb-3 space-y-1">
+            <a href="{% url 'core:home' %}" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                Home
+            </a>
+            <a href="{% url 'doctors:doctor_list' %}" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                Doctors
+            </a>
+            <a href="{% url 'doctors:specialty_list' %}" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                Specialties
+            </a>
+            <a href="#" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                Appointments (Coming Soon)
+            </a>
+        </div>
+        
+        {% if user.is_authenticated %}
+            <div class="pt-4 pb-3 border-t border-gray-200">
+                <div class="flex items-center px-4">
+                    <div class="flex-shrink-0">
+                        <div class="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center">
+                            <i class="fas fa-user text-primary-600"></i>
+                        </div>
+                    </div>
+                    <div class="ml-3">
+                        <div class="text-base font-medium text-gray-800">{{ user.get_full_name|default:user.username }}</div>
+                    </div>
+                </div>
+                <div class="mt-3 space-y-1">
+                    <a href="{% url 'accounts:profile' %}" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
+                        Profile
+                    </a>
+                    <a href="#" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
+                        My Appointments (Coming Soon)
+                    </a>
+                    {% if user.is_superuser or user.user_type == 'admin' %}
+                        <a href="{% url 'doctors:doctor_create' %}" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
+                            Create Doctor
+                        </a>
+                        <a href="{% url 'doctors:specialty_create' %}" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
+                            Create Specialty
+                        </a>
+                        <a href="{% url 'admin:index' %}" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
+                            Admin Panel
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'accounts:logout' %}" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
+                        Logout
+                    </a>
+                </div>
+            </div>
+        {% else %}
+            <div class="pt-4 pb-3 border-t border-gray-200">
+                <div class="space-y-1">
+                    <a href="{% url 'accounts:login' %}" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
+                        Login
+                    </a>
+                    <a href="{% url 'accounts:register' %}" class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
+                        Register
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</nav>
+
+<script>
+function toggleUserMenu() {
+    const menu = document.getElementById('user-menu');
+    menu.classList.toggle('hidden');
+}
+
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobile-menu');
+    menu.classList.toggle('hidden');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const userMenu = document.getElementById('user-menu');
+    const userMenuButton = document.getElementById('user-menu-button');
+    
+    if (userMenu && !userMenuButton.contains(event.target)) {
+        userMenu.classList.add('hidden');
+    }
+});
+</script>

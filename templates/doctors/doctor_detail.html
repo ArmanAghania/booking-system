@@ -1,0 +1,199 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Dr. {{ doctor.user.get_full_name }} - {{ doctor.specialty.name }} - Booking System{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-8">
+        <ol class="flex items-center space-x-2 text-sm text-gray-500">
+            <li><a href="{% url 'doctors:doctor_list' %}" class="hover:text-primary-600">Doctors</a></li>
+            <li class="flex items-center">
+                <svg class="w-4 h-4 mx-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                </svg>
+                Dr. {{ doctor.user.get_full_name }}
+            </li>
+        </ol>
+    </nav>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Doctor Profile Card -->
+        <div class="lg:col-span-1">
+            <div class="bg-white shadow-xl rounded-xl border border-gray-100 sticky top-8">
+                <!-- Doctor Photo Section -->
+                <div class="h-64 bg-gradient-to-br from-primary-100 to-blue-100 flex items-center justify-center rounded-t-xl">
+                    <div class="text-center">
+                        <div class="bg-primary-600 text-white rounded-full w-32 h-32 flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-user-md text-4xl"></i>
+                        </div>
+                        <p class="text-sm text-gray-600">Photo Coming Soon</p>
+                    </div>
+                </div>
+                
+                <!-- Doctor Info -->
+                <div class="p-8">
+                    <h1 class="text-2xl font-bold text-gray-900 mb-2">
+                        Dr. {{ doctor.user.get_full_name }}
+                    </h1>
+                    <div class="flex items-center text-primary-600 font-medium mb-4">
+                        <i class="fas fa-stethoscope mr-2"></i>
+                        {{ doctor.specialty.name }}
+                    </div>
+                    
+                    <!-- Rating -->
+                    <div class="flex items-center mb-4">
+                        <div class="flex items-center">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= doctor.average_rating %}
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                {% else %}
+                                    <i class="far fa-star text-gray-300"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <span class="ml-2 text-sm text-gray-600">({{ doctor.average_rating|floatformat:1 }})</span>
+                    </div>
+                    
+                    <!-- Key Stats -->
+                    <div class="space-y-4 mb-6">
+                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span class="text-gray-600">Experience</span>
+                            <span class="font-semibold text-gray-900">{{ doctor.experience_years }} years</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span class="text-gray-600">License</span>
+                            <span class="font-semibold text-gray-900">{{ doctor.license_number }}</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2">
+                            <span class="text-gray-600">Consultation Fee</span>
+                            <span class="font-bold text-primary-600 text-lg">${{ doctor.consultation_fee }}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Contact Info -->
+                    <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                        <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
+                            <i class="fas fa-phone text-primary-600 mr-2"></i>
+                            Contact Information
+                        </h3>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex items-center text-gray-600">
+                                <i class="fas fa-envelope mr-2 w-4"></i>
+                                {{ doctor.user.email }}
+                            </div>
+                            {% if doctor.user.phone_number %}
+                                <div class="flex items-center text-gray-600">
+                                    <i class="fas fa-phone mr-2 w-4"></i>
+                                    {{ doctor.user.phone_number }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="space-y-3">
+                        <button class="w-full bg-primary-600 hover:bg-primary-700 text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg" disabled>
+                            <i class="fas fa-calendar mr-2"></i>Book Appointment (Coming Soon)
+                        </button>
+                        <button class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg" disabled>
+                            <i class="fas fa-comment mr-2"></i>Send Message (Coming Soon)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="lg:col-span-2 space-y-8">
+            <!-- About Section -->
+            <div class="bg-white shadow-xl rounded-xl border border-gray-100">
+                <div class="px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-primary-50 to-blue-50">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+                        <div class="bg-primary-100 p-3 rounded-lg mr-4">
+                            <i class="fas fa-user text-primary-600"></i>
+                        </div>
+                        About Dr. {{ doctor.user.first_name }}
+                    </h2>
+                </div>
+                <div class="p-8">
+                    <div class="prose max-w-none">
+                        <p class="text-gray-700 leading-relaxed text-lg">{{ doctor.bio }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Specialty Information -->
+            <div class="bg-white shadow-xl rounded-xl border border-gray-100">
+                <div class="px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+                        <div class="bg-blue-100 p-3 rounded-lg mr-4">
+                            <i class="fas fa-stethoscope text-blue-600"></i>
+                        </div>
+                        Specialty Information
+                    </h2>
+                </div>
+                <div class="p-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="font-semibold text-gray-900 mb-2">Specialty</h3>
+                            <p class="text-gray-700">{{ doctor.specialty.name }}</p>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-900 mb-2">Experience</h3>
+                            <p class="text-gray-700">{{ doctor.experience_years }} years of experience</p>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <h3 class="font-semibold text-gray-900 mb-2">Specialty Description</h3>
+                        <p class="text-gray-700">{{ doctor.specialty.description }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reviews Section (Placeholder) -->
+            <div class="bg-white shadow-xl rounded-xl border border-gray-100">
+                <div class="px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+                        <div class="bg-green-100 p-3 rounded-lg mr-4">
+                            <i class="fas fa-star text-green-600"></i>
+                        </div>
+                        Patient Reviews
+                    </h2>
+                </div>
+                <div class="p-8">
+                    <div class="text-center py-12">
+                        <div class="bg-gray-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-comments text-2xl text-gray-400"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Reviews Coming Soon</h3>
+                        <p class="text-gray-600">Patient reviews and ratings will be available here once the review system is implemented.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Available Time Slots (Placeholder) -->
+            <div class="bg-white shadow-xl rounded-xl border border-gray-100">
+                <div class="px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+                        <div class="bg-purple-100 p-3 rounded-lg mr-4">
+                            <i class="fas fa-calendar-alt text-purple-600"></i>
+                        </div>
+                        Available Time Slots
+                    </h2>
+                </div>
+                <div class="p-8">
+                    <div class="text-center py-12">
+                        <div class="bg-gray-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-calendar text-2xl text-gray-400"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Scheduling Coming Soon</h3>
+                        <p class="text-gray-600">Available time slots and appointment booking will be available here once the appointment system is implemented.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
