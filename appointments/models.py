@@ -6,7 +6,13 @@ User = get_user_model()
 
 
 class TimeSlot(models.Model):
-    doctor = models.ForeignKey('doctors.Doctor', on_delete=models.CASCADE, related_name='time_slots')
+    doctor = models.ForeignKey(
+        'doctors.Doctor',
+        on_delete=models.CASCADE,
+        related_name='time_slots',
+        null=True,
+        blank=True
+    )
 
     date = models.DateField(verbose_name="TimeSlot Date")
 
@@ -32,13 +38,27 @@ class TimeSlot(models.Model):
 
     def clean(self):
         from django.core.exceptions import ValidationError
+        from django.utils import timezone
 
+        # 1) End time must be after start time
         if self.start_time and self.end_time and self.start_time >= self.end_time:
             raise ValidationError("End time must be after start time.")
 
-        from django.utils import timezone
+        # 2) Date cannot be in the past
         if self.date and self.date < timezone.now().date():
             raise ValidationError("Cannot create time slots for past dates.")
+
+        # 3) Prevent overlapping slots for the same doctor
+        if self.doctor:
+            overlapping = TimeSlot.objects.filter(
+                doctor=self.doctor,
+                date=self.date
+            ).exclude(pk=self.pk).filter(
+                start_time__lt=self.end_time,
+                end_time__gt=self.start_time
+            )
+            if overlapping.exists():
+                raise ValidationError("This time slot overlaps with another existing slot for this doctor.")
 
     def save(self, *args, **kwargs):
         self.full_clean()
