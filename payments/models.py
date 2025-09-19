@@ -22,6 +22,12 @@ class Payment(models.Model):
         return f"{self.appointment_id} - {self.amount} - {self.status} - {self.paid_at} - {self.created_at}"
 
 
+    class Meta:
+        verbose_name = "Payment"
+        verbose_name_plural = "Payments"
+        ordering = ['-created_at']
+
+
 class WalletTransaction(models.Model):
     DEPOSIT = "deposit"
     WITHDRAW = 'withdraw'
@@ -34,11 +40,17 @@ class WalletTransaction(models.Model):
     amount = models.DecimalField(decimal_places=2, max_digits=20)
     description = models.TextField()
     balance_after = models.DecimalField(decimal_places=2, max_digits=20)
-    appointment_id = models.ForeignKey(Appointment, on_delete=models.CASCADE)
+    appointment_id = models.ForeignKey(Appointment, on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.user_id}, {str(self.amount)}, {self.description}, {str(self.appointment_id)}, {self.transaction_type}, {self.created_at}"
+
+
+    class Meta:
+        verbose_name = 'Wallet Transaction'
+        verbose_name_plural = 'Wallet Transactions'
+        ordering = ['-created_at']
 
 
 
