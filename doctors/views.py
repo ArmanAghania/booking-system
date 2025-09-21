@@ -20,9 +20,7 @@ from .forms import SpecialtyForm, DoctorCreationForm
 from .mixins import AdminRequiredMixin, is_admin_user
 
 
-# Specialty Class-Based Views
 class SpecialtyListView(ListView):
-    """List all specialties with search and pagination."""
 
     model = Specialty
     template_name = "doctors/specialty_list.html"
@@ -31,7 +29,6 @@ class SpecialtyListView(ListView):
     ordering = ["name"]
 
     def get_queryset(self):
-        """Filter specialties based on search query."""
         queryset = super().get_queryset()
         search_query = self.request.GET.get("search", "")
 
@@ -43,7 +40,6 @@ class SpecialtyListView(ListView):
         return queryset
 
     def get_context_data(self, **kwargs):
-        """Add search query to context."""
         context = super().get_context_data(**kwargs)
         context["search_query"] = self.request.GET.get("search", "")
         context["total_specialties"] = self.get_queryset().count()
@@ -51,7 +47,6 @@ class SpecialtyListView(ListView):
 
 
 class SpecialtyDetailView(DetailView):
-    """Display specialty details and associated doctors."""
 
     model = Specialty
     template_name = "doctors/specialty_detail.html"
@@ -59,7 +54,6 @@ class SpecialtyDetailView(DetailView):
     pk_url_kwarg = "specialty_id"
 
     def get_context_data(self, **kwargs):
-        """Add doctors in this specialty to context."""
         context = super().get_context_data(**kwargs)
         specialty = self.get_object()
 
@@ -75,21 +69,18 @@ class SpecialtyDetailView(DetailView):
 
 
 class SpecialtyCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
-    """Create a new specialty (admin only)."""
 
     model = Specialty
     form_class = SpecialtyForm
     template_name = "doctors/specialty_form.html"
 
     def get_context_data(self, **kwargs):
-        """Add form context."""
         context = super().get_context_data(**kwargs)
         context["title"] = "Create New Specialty"
         context["submit_text"] = "Create Specialty"
         return context
 
     def form_valid(self, form):
-        """Handle successful form submission."""
         response = super().form_valid(form)
         messages.success(
             self.request, f'Specialty "{self.object.name}" created successfully!'
@@ -97,14 +88,12 @@ class SpecialtyCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
         return response
 
     def get_success_url(self):
-        """Redirect to specialty detail page."""
         return reverse(
             "doctors:specialty_detail", kwargs={"specialty_id": self.object.id}
         )
 
 
 class SpecialtyUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
-    """Update an existing specialty (admin only)."""
 
     model = Specialty
     form_class = SpecialtyForm
@@ -112,14 +101,12 @@ class SpecialtyUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
     pk_url_kwarg = "specialty_id"
 
     def get_context_data(self, **kwargs):
-        """Add form context."""
         context = super().get_context_data(**kwargs)
         context["title"] = f"Update {self.object.name}"
         context["submit_text"] = "Update Specialty"
         return context
 
     def form_valid(self, form):
-        """Handle successful form submission."""
         response = super().form_valid(form)
         messages.success(
             self.request, f'Specialty "{self.object.name}" updated successfully!'
@@ -127,14 +114,12 @@ class SpecialtyUpdateView(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
         return response
 
     def get_success_url(self):
-        """Redirect to specialty detail page."""
         return reverse(
             "doctors:specialty_detail", kwargs={"specialty_id": self.object.id}
         )
 
 
 class SpecialtyDeleteView(LoginRequiredMixin, AdminRequiredMixin, DeleteView):
-    """Delete a specialty (admin only)."""
 
     model = Specialty
     template_name = "doctors/specialty_confirm_delete.html"
@@ -142,7 +127,6 @@ class SpecialtyDeleteView(LoginRequiredMixin, AdminRequiredMixin, DeleteView):
     success_url = reverse_lazy("doctors:specialty_list")
 
     def delete(self, request, *args, **kwargs):
-        """Check if specialty has doctors before deletion."""
         specialty = self.get_object()
         doctor_count = specialty.doctor_set.count()
 
@@ -159,9 +143,7 @@ class SpecialtyDeleteView(LoginRequiredMixin, AdminRequiredMixin, DeleteView):
         return response
 
 
-# Doctor Class-Based Views
 class DoctorListView(ListView):
-    """List all doctors with search, filtering, and pagination."""
 
     model = Doctor
     template_name = "doctors/doctor_list.html"
@@ -170,14 +152,12 @@ class DoctorListView(ListView):
     ordering = ["user__last_name"]
 
     def get_queryset(self):
-        """Filter doctors based on search query and specialty filter."""
         queryset = (
             Doctor.objects.filter(is_active=True)
             .select_related("user", "specialty")
             .order_by("user__last_name", "user__first_name")
         )
 
-        # Search functionality
         search_query = self.request.GET.get("search", "")
         if search_query:
             queryset = queryset.filter(
@@ -187,7 +167,6 @@ class DoctorListView(ListView):
                 | Q(bio__icontains=search_query)
             )
 
-        # Filter by specialty
         specialty_filter = self.request.GET.get("specialty", "")
         if specialty_filter:
             queryset = queryset.filter(specialty_id=specialty_filter)
@@ -195,7 +174,6 @@ class DoctorListView(ListView):
         return queryset
 
     def get_context_data(self, **kwargs):
-        """Add search query, specialty filter, and specialties to context."""
         context = super().get_context_data(**kwargs)
         context["search_query"] = self.request.GET.get("search", "")
         context["specialty_filter"] = self.request.GET.get("specialty", "")
@@ -205,7 +183,6 @@ class DoctorListView(ListView):
 
 
 class DoctorDetailView(DetailView):
-    """Display doctor details."""
 
     model = Doctor
     template_name = "doctors/doctor_detail.html"
@@ -213,7 +190,6 @@ class DoctorDetailView(DetailView):
     pk_url_kwarg = "doctor_id"
 
     def get_queryset(self):
-        """Only show active doctors."""
         return (
             Doctor.objects.filter(is_active=True)
             .select_related("user", "specialty")
@@ -222,14 +198,12 @@ class DoctorDetailView(DetailView):
 
 
 class DoctorCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
-    """Create a new doctor (admin only)."""
 
     model = Doctor
     form_class = DoctorCreationForm
     template_name = "doctors/doctor_form.html"
 
     def get_context_data(self, **kwargs):
-        """Add form context."""
         context = super().get_context_data(**kwargs)
         context["title"] = "Create New Doctor"
         context["submit_text"] = "Create Doctor"
@@ -237,14 +211,23 @@ class DoctorCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
         return context
 
     def form_valid(self, form):
-        """Handle successful form submission."""
-        response = super().form_valid(form)
-        messages.success(
-            self.request,
-            f'Doctor "{self.object.user.get_full_name()}" created successfully!',
-        )
-        return response
+        try:
+            doctor = form.save(created_by=self.request.user)
+
+            self.object = doctor
+
+            messages.success(
+                self.request,
+                f'Doctor "{self.object.user.get_full_name()}" created successfully!',
+            )
+
+            return redirect(self.get_success_url())
+        except Exception as e:
+            messages.error(
+                self.request,
+                f"Error creating doctor: {str(e)}",
+            )
+            return self.form_invalid(form)
 
     def get_success_url(self):
-        """Redirect to doctor detail page."""
         return reverse("doctors:doctor_detail", kwargs={"doctor_id": self.object.id})
