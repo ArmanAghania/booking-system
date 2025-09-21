@@ -196,6 +196,54 @@ class DoctorDetailView(DetailView):
             .order_by("user__last_name", "user__first_name")
         )
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        doctor = self.get_object()
+
+        # Get reviews for this doctor
+        from reviews.models import Review
+
+        reviews = (
+            Review.objects.filter(doctor=doctor)
+            .select_related("patient")
+            .order_by("-created_at")[:5]
+        )
+        context["reviews"] = reviews
+        context["total_reviews"] = Review.objects.filter(doctor=doctor).count()
+
+        # Get available time slots for this doctor
+        from appointments.models import TimeSlot
+        from django.utils import timezone
+        from datetime import date
+
+        # Get one slot per day for the next 6 days
+        from django.db.models import Min
+        from datetime import timedelta
+
+        start_date = date.today()
+        end_date = start_date + timedelta(days=6)
+
+        # Get the earliest available slot for each day
+        daily_slots = []
+        for i in range(6):
+            current_date = start_date + timedelta(days=i)
+            earliest_slot = (
+                TimeSlot.objects.filter(
+                    doctor=doctor, is_available=True, date=current_date
+                )
+                .order_by("start_time")
+                .first()
+            )
+
+            if earliest_slot:
+                daily_slots.append(earliest_slot)
+
+        available_slots = daily_slots
+
+        context["available_slots"] = available_slots
+
+        return context
+
 
 class DoctorCreateView(LoginRequiredMixin, AdminRequiredMixin, CreateView):
 
