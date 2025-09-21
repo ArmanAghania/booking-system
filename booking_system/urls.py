@@ -17,13 +17,30 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from django.shortcuts import redirect
+from django.contrib.auth import logout
+from django.contrib import messages
+
+
+def admin_logout_redirect(request):
+    """Redirect Django admin logout to home page."""
+    # Log out the user
+    if request.user.is_authenticated:
+        logout(request)
+        messages.info(request, "You have been logged out successfully.")
+
+    return redirect("core:home")
+
 
 urlpatterns = [
+    # Override admin logout before including admin URLs
+    path("admin/logout/", admin_logout_redirect, name="admin_logout_redirect"),
     path("admin/", admin.site.urls),
     path("", include("core.urls")),
     path("accounts/", include("accounts.urls")),
+    path("accounts/", include("allauth.urls")),
     path("doctors/", include("doctors.urls")),
     path("appointments/", include("appointments.urls")),
-    path("payments/", include("payments.urls")),
+    # path("payments/", include("payments.urls")),
     path("reviews/", include("reviews.urls")),
 ]

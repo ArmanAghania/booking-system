@@ -135,6 +135,7 @@ class Doctor(models.Model):
             user_type="doctor",
             is_staff=True,
             is_active=True,
+            password="temp_password_123",  # Temporary password - should be changed on first login
         )
 
         # Create doctor profile
