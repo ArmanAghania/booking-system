@@ -1,0 +1,28 @@
+{% extends "base/base.html" %}
+{% load humanize %}
+
+{% block title %}Wallet Detail{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto mt-10 bg-white shadow rounded-lg p-6">
+    <!-- User Info -->
+    <h3 class="text-xl font-semibold text-gray-800 mb-2">
+        Name: {{ user.first_name }} {{ user.last_name }}
+    </h3>
+    <p class="text-lg text-gray-600 mb-6">
+        Balance:
+        <span class="font-bold text-green-600">
+            {{ user.wallet_balance|floatformat:0|intcomma }} $
+        </span>
+    </p>
+
+    <!-- Deposit Button -->
+    <form action="{% url 'payments:deposit' %}" method="post" class="inline-block">
+        {% csrf_token %}
+        {% include "components/button.html" with text="Deposit Wallet" type="submit" variant="success" size="md" icon="fas fa-wallet" %}
+    </form>
+    <a href="{% url 'payments:transactions_view' %}" class="inline-block">
+        {% include "components/button.html" with text="View Transactions" type="button" variant="primary" size="md" icon="fas fa-list" %}
+    </a>
+</div>
+{% endblock %}

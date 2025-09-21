@@ -1,0 +1,17 @@
+{% extends "base/base.html" %}
+
+{% block title %}Withdraw{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto mt-10 bg-white shadow rounded-lg p-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">Withdraw</h2>
+    <h3 class="text-2xl font-bold text-gray-800 mb-6">{{ doctor.consultation_fee }}</h3>
+
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        {% include "components/button.html" with text="Withdraw" type="submit" variant="danger" size="md" icon="fas fa-money-bill-wave" %}
+    </form>
+</div>
+{% endblock %}
