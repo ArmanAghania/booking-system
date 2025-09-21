@@ -1,0 +1,25 @@
+{% extends "base/base.html" %}
+{% block title %}Book Appointment{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto py-8">
+  <h2 class="text-2xl font-bold mb-4">
+    Book Appointment with Dr. {{ slot.doctor.user.get_full_name }}
+  </h2>
+  <p class="mb-4 text-gray-600">
+    {{ slot.date }} — {{ slot.start_time }} to {{ slot.end_time }}
+  </p>
+
+  <form method="post" class="space-y-4">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <input type="hidden" name="slot_id" value="{{ slot.id }}">
+
+    <button type="submit"
+            class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded">
+      Confirm Booking
+    </button>
+  </form>
+</div>
+{% endblock %}

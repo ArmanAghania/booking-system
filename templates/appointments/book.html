@@ -1,35 +1,49 @@
 {% extends "base/base.html" %}
 
-{% block title %}Book Appointment - {{ doctor.user.get_full_name }}{% endblock %}
+{% block title %}Book Appointment - Dr. {{ doctor.user.get_full_name }}{% endblock %}
 
 {% block content %}
 <div class="max-w-4xl mx-auto py-8">
-  <h2 class="text-2xl font-bold mb-4">Available Slots for Dr. {{ doctor.user.get_full_name }}</h2>
+  <h2 class="text-2xl font-bold mb-6">
+    Available Slots for Dr. {{ doctor.user.get_full_name }}
+  </h2>
 
+  <!-- Filter form -->
   <form method="get" class="mb-6 flex space-x-4">
     <div>
-      <label class="block text-sm font-medium text-gray-700">From</label>bookingsystem
-      <input type="date" name="start" class="border rounded px-2 py-1">
+      <label class="block text-sm font-medium text-gray-700">From</label>
+      <input type="date" name="start" value="{{ request.GET.start }}"
+             class="border rounded px-2 py-1">
     </div>
     <div>
       <label class="block text-sm font-medium text-gray-700">To</label>
-      <input type="date" name="end" class="border rounded px-2 py-1">
+      <input type="date" name="end" value="{{ request.GET.end }}"
+             class="border rounded px-2 py-1">
     </div>
     <div class="flex items-end">
-      <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded">
+      <button type="submit"
+              class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded">
         Filter
       </button>
     </div>
   </form>
 
+  <!-- Slots list -->
   <ul class="space-y-3">
     {% for slot in slots %}
       <li class="p-4 border rounded-lg shadow-sm flex justify-between items-center">
-        <span>{{ slot.date }} — {{ slot.start_time }} to {{ slot.end_time }}</span>
-        <button class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded">Book</button>
+        <span>
+          {{ slot.date }} — {{ slot.start_time }} to {{ slot.end_time }}
+        </span>
+        <a href="{% url 'appointments:reserve_slot' slot.id %}"
+           class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded">
+          Book
+        </a>
       </li>
     {% empty %}
-      <li class="p-4 border rounded-lg text-gray-500 text-center">No available slots</li>
+      <li class="p-4 border rounded-lg text-gray-500 text-center">
+        No available slots
+      </li>
     {% endfor %}
   </ul>
 </div>
