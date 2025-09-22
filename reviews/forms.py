@@ -3,27 +3,22 @@
 from django import forms
 from .models import Review
 
-
 class ReviewForm(forms.ModelForm):
+    # Explicitly define the rating field to ensure it has choices from 1 to 5
+    rating = forms.ChoiceField(
+        choices=[(i, str(i)) for i in range(1, 6)],
+        widget=forms.RadioSelect, # This will be hidden by our star UI
+        label="Your Rating",
+        required=True
+    )
 
     class Meta:
         model = Review
-        fields = ['rating', 'comment']
-
-        widgets = {
-            'rating': forms.RadioSelect(
-                attrs={'class': 'hidden'},
-                choices=[(i, str(i)) for i in range(1, 6)]
-            ),
-            'comment': forms.Textarea(
-                attrs={
-                    'rows': 5,
-                    'placeholder': 'Share your experience with the doctor...'
-                }
-            ),
-        }
-
+        fields = ['rating', 'comment', 'is_anonymous']
         labels = {
-            'rating': 'Your Rating',
-            'comment': 'Your Review',
+            'comment': 'Your Review (Optional)',
+            'is_anonymous': 'Submit my review anonymously'
+        }
+        widgets = {
+            'comment': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Share your experience...'}),
         }

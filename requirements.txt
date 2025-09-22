@@ -5,6 +5,8 @@ charset-normalizer==3.4.3
 cryptography==46.0.1
 Django==5.2.6
 django-allauth==65.11.2
+dj-database-url==2.1.0
+gunicorn==21.2.0
 idna==3.10
 psycopg2-binary==2.9.10
 pycparser==2.23

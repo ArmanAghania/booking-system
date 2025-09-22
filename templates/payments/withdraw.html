@@ -4,12 +4,45 @@
 
 {% block content %}
 <div class="max-w-md mx-auto mt-10 bg-white shadow rounded-lg p-6">
-    <h2 class="text-2xl font-bold text-gray-800 mb-6">Withdraw</h2>
-    <h3 class="text-2xl font-bold text-gray-800 mb-6">{{ doctor.consultation_fee }}</h3>
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">Withdraw Funds</h2>
+    
+    <!-- Current Balance -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <div class="flex items-center">
+            <i class="fas fa-wallet text-blue-600 mr-2"></i>
+            <span class="text-sm text-blue-600 font-medium">Current Balance</span>
+        </div>
+        <div class="text-2xl font-bold text-blue-800 mt-1">${{ user.wallet_balance }}</div>
+    </div>
 
     <form method="post" class="space-y-4">
         {% csrf_token %}
-        {{ form.as_p }}
+        
+        <!-- Amount Field -->
+        <div>
+            <label for="amount" class="block text-sm font-medium text-gray-700 mb-2">
+                Withdrawal Amount
+            </label>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span class="text-gray-500 sm:text-sm">$</span>
+                </div>
+                <input 
+                    type="number" 
+                    name="amount" 
+                    id="amount"
+                    step="0.01"
+                    min="0.01"
+                    max="{{ user.wallet_balance }}"
+                    placeholder="0.00"
+                    required
+                    class="block w-full pl-7 pr-3 py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 text-lg"
+                >
+            </div>
+            <p class="mt-1 text-sm text-gray-500">
+                Maximum withdrawal: ${{ user.wallet_balance }}
+            </p>
+        </div>
 
         {% include "components/button.html" with text="Withdraw" type="submit" variant="danger" size="md" icon="fas fa-money-bill-wave" %}
     </form>
