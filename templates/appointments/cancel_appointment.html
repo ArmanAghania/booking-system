@@ -1,0 +1,109 @@
+{% extends "base/base.html" %}
+
+{% block title %}Cancel Appointment - Booking System{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Cancel Appointment</h1>
+        <p class="text-lg text-gray-600 mt-2">Are you sure you want to cancel this appointment?</p>
+    </div>
+
+    <div class="bg-white shadow-xl rounded-xl border border-gray-100">
+        <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-red-50 to-pink-50">
+            <h2 class="text-xl font-semibold text-gray-900 flex items-center">
+                <i class="fas fa-exclamation-triangle text-red-600 mr-3"></i>
+                Appointment Details
+            </h2>
+        </div>
+        
+        <div class="p-6">
+            <div class="space-y-4">
+                <!-- Doctor Info -->
+                <div class="flex items-center">
+                    <div class="bg-primary-100 rounded-full w-12 h-12 flex items-center justify-center mr-4">
+                        <i class="fas fa-user-md text-primary-600"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-900">Dr. {{ appointment.doctor.user.get_full_name }}</h3>
+                        <p class="text-sm text-gray-600">{{ appointment.doctor.specialty.name }}</p>
+                    </div>
+                </div>
+
+                <!-- Time Info -->
+                <div class="flex items-center">
+                    <div class="bg-green-100 rounded-full w-12 h-12 flex items-center justify-center mr-4">
+                        <i class="fas fa-clock text-green-600"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-900">
+                            {{ appointment.time_slot.start_time|time:"g:i A" }} - {{ appointment.time_slot.end_time|time:"g:i A" }}
+                        </p>
+                        <p class="text-sm text-gray-600">{{ appointment.time_slot.date|date:"l, F d, Y" }}</p>
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div class="flex items-center">
+                    <div class="bg-yellow-100 rounded-full w-12 h-12 flex items-center justify-center mr-4">
+                        <i class="fas fa-info-circle text-yellow-600"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-900">Status: {{ appointment.status }}</p>
+                        <p class="text-sm text-gray-600">Current appointment status</p>
+                    </div>
+                </div>
+
+                <!-- Fee Info -->
+                <div class="flex items-center">
+                    <div class="bg-purple-100 rounded-full w-12 h-12 flex items-center justify-center mr-4">
+                        <i class="fas fa-dollar-sign text-purple-600"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-900">Consultation Fee: ${{ appointment.consultation_fee }}</p>
+                        <p class="text-sm text-gray-600">Amount for this appointment</p>
+                    </div>
+                </div>
+
+                <!-- Notes -->
+                {% if appointment.notes %}
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h4 class="font-semibold text-gray-900 mb-2">Notes:</h4>
+                        <p class="text-sm text-gray-700">{{ appointment.notes }}</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Warning Message -->
+            <div class="mt-6 bg-red-50 rounded-lg p-4">
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>
+                    <span class="text-sm text-red-800 font-medium">Warning</span>
+                </div>
+                <p class="text-sm text-red-700 mt-1">
+                    Cancelling this appointment will make the time slot available for other patients. 
+                    This action cannot be undone.
+                </p>
+            </div>
+
+            <!-- Action Buttons -->
+            <form method="post" class="mt-6">
+                {% csrf_token %}
+                <div class="flex space-x-4">
+                    <button type="submit" 
+                            class="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center">
+                        <i class="fas fa-times mr-2"></i>
+                        Yes, Cancel Appointment
+                    </button>
+                    <a href="{% url 'appointments:appointment_list' %}" 
+                       class="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-3 px-6 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Keep Appointment
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
