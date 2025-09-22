@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "payments",
     "reviews",
     "notifications",
+        "widget_tweaks",
 ]
 
 MIDDLEWARE = [

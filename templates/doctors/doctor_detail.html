@@ -1,11 +1,10 @@
-{% extends "base/base.html" %}
+{% extends "base.html" %}
 {% load static %}
 
 {% block title %}Dr. {{ doctor.user.get_full_name }} - {{ doctor.specialty.name }} - Booking System{% endblock %}
 
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="mb-8">
         <ol class="flex items-center space-x-2 text-sm text-gray-500">
             <li><a href="{% url 'doctors:doctor_list' %}" class="hover:text-primary-600">Doctors</a></li>
@@ -19,10 +18,8 @@
     </nav>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Doctor Profile Card -->
         <div class="lg:col-span-1">
             <div class="bg-white shadow-xl rounded-xl border border-gray-100 sticky top-8">
-                <!-- Doctor Photo Section -->
                 <div class="h-64 bg-gradient-to-br from-primary-100 to-blue-100 flex items-center justify-center rounded-t-xl">
                     <div class="text-center">
                         <div class="bg-primary-600 text-white rounded-full w-32 h-32 flex items-center justify-center mx-auto mb-4">
@@ -31,8 +28,7 @@
                         <p class="text-sm text-gray-600">Photo Coming Soon</p>
                     </div>
                 </div>
-                
-                <!-- Doctor Info -->
+
                 <div class="p-8">
                     <h1 class="text-2xl font-bold text-gray-900 mb-2">
                         Dr. {{ doctor.user.get_full_name }}
@@ -41,22 +37,20 @@
                         <i class="fas fa-stethoscope mr-2"></i>
                         {{ doctor.specialty.name }}
                     </div>
-                    
-                    <!-- Rating -->
+
                     <div class="flex items-center mb-4">
-                        <div class="flex items-center">
+                        <div class="flex items-center text-yellow-400">
                             {% for i in "12345" %}
                                 {% if forloop.counter <= doctor.average_rating %}
-                                    <i class="fas fa-star text-yellow-400"></i>
+                                    <i class="fas fa-star"></i>
                                 {% else %}
-                                    <i class="far fa-star text-gray-300"></i>
+                                    <i class="far fa-star"></i>
                                 {% endif %}
                             {% endfor %}
                         </div>
                         <span class="ml-2 text-sm text-gray-600">({{ doctor.average_rating|floatformat:1 }})</span>
                     </div>
-                    
-                    <!-- Key Stats -->
+
                     <div class="space-y-4 mb-6">
                         <div class="flex justify-between items-center py-2 border-b border-gray-100">
                             <span class="text-gray-600">Experience</span>
@@ -71,8 +65,7 @@
                             <span class="font-bold text-primary-600 text-lg">${{ doctor.consultation_fee }}</span>
                         </div>
                     </div>
-                    
-                    <!-- Contact Info -->
+
                     <div class="bg-gray-50 rounded-lg p-4 mb-6">
                         <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
                             <i class="fas fa-phone text-primary-600 mr-2"></i>
@@ -91,10 +84,9 @@
                             {% endif %}
                         </div>
                     </div>
-                    
-                    <!-- Action Buttons -->
+
                     <div class="space-y-3">
-                        <a href="{% url 'appointments:calendar_book' doctor.id %}"
+                        <a href="{% url 'appointments:book' doctor.id %}"
                            class="w-full bg-primary-600 hover:bg-primary-700 text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center">
                            <i class="fas fa-calendar mr-2"></i>Book Appointment
                         </a>
@@ -106,190 +98,64 @@
             </div>
         </div>
 
-        <!-- Main Content -->
         <div class="lg:col-span-2 space-y-8">
-            <!-- About Section -->
             <div class="bg-white shadow-xl rounded-xl border border-gray-100">
-                <div class="px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-primary-50 to-blue-50">
-                    <h2 class="text-2xl font-bold text-gray-900 flex items-center">
-                        <div class="bg-primary-100 p-3 rounded-lg mr-4">
-                            <i class="fas fa-user text-primary-600"></i>
-                        </div>
-                        About Dr. {{ doctor.user.first_name }}
-                    </h2>
+                <div class="px-8 py-6 border-b border-gray-200">
+                    <h2 class="text-2xl font-bold text-gray-900">About Dr. {{ doctor.user.first_name }}</h2>
                 </div>
                 <div class="p-8">
-                    <div class="prose max-w-none">
-                        <p class="text-gray-700 leading-relaxed text-lg">{{ doctor.bio }}</p>
-                    </div>
+                    <p class="text-gray-700 leading-relaxed">{{ doctor.bio }}</p>
                 </div>
             </div>
 
-            <!-- Specialty Information -->
             <div class="bg-white shadow-xl rounded-xl border border-gray-100">
-                <div class="px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-                    <h2 class="text-2xl font-bold text-gray-900 flex items-center">
-                        <div class="bg-blue-100 p-3 rounded-lg mr-4">
-                            <i class="fas fa-stethoscope text-blue-600"></i>
-                        </div>
-                        Specialty Information
-                    </h2>
-                </div>
-                <div class="p-8">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <h3 class="font-semibold text-gray-900 mb-2">Specialty</h3>
-                            <p class="text-gray-700">{{ doctor.specialty.name }}</p>
-                        </div>
-                        <div>
-                            <h3 class="font-semibold text-gray-900 mb-2">Experience</h3>
-                            <p class="text-gray-700">{{ doctor.experience_years }} years of experience</p>
-                        </div>
-                    </div>
-                    <div class="mt-6">
-                        <h3 class="font-semibold text-gray-900 mb-2">Specialty Description</h3>
-                        <p class="text-gray-700">{{ doctor.specialty.description }}</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reviews Section -->
-            <div class="bg-white shadow-xl rounded-xl border border-gray-100">
-                <div class="px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50">
-                    <h2 class="text-2xl font-bold text-gray-900 flex items-center">
-                        <div class="bg-green-100 p-3 rounded-lg mr-4">
-                            <i class="fas fa-star text-green-600"></i>
-                        </div>
-                        Patient Reviews
-                        {% if total_reviews > 0 %}
-                            <span class="ml-3 bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">
-                                {{ total_reviews }} review{{ total_reviews|pluralize }}
-                            </span>
-                        {% endif %}
-                    </h2>
+                <div class="px-8 py-6 border-b border-gray-200">
+                    <h2 class="text-2xl font-bold text-gray-900">Patient Reviews ({{ doctor.total_reviews }})</h2>
                 </div>
                 <div class="p-8">
                     {% if reviews %}
                         <div class="space-y-6">
                             {% for review in reviews %}
-                                <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow duration-200">
-                                    <div class="flex items-start justify-between mb-4">
-                                        <div class="flex items-center">
-                                            <div class="bg-primary-100 rounded-full w-10 h-10 flex items-center justify-center mr-3">
-                                                <i class="fas fa-user text-primary-600"></i>
-                                            </div>
-                                            <div>
-                                                <h4 class="font-semibold text-gray-900">
-                                                    {% if review.is_anonymous %}
-                                                        Anonymous Patient
-                                                    {% else %}
-                                                        {{ review.patient.get_full_name|default:review.patient.username }}
-                                                    {% endif %}
-                                                </h4>
-                                                <p class="text-sm text-gray-500">{{ review.created_at|date:"M d, Y" }}</p>
-                                            </div>
+                                <div class="flex items-start space-x-4 pb-6 border-b border-gray-100 last:border-b-0">
+                                    <div class="flex-shrink-0 w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
+                                        {% if review.is_anonymous %}<i class="fas fa-user-secret text-primary-600 text-lg"></i>
+                                        {% else %}<i class="fas fa-user text-primary-600 text-lg"></i>{% endif %}
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between items-center">
+                                            <h4 class="font-semibold text-gray-900">
+                                                {% if review.is_anonymous %}Anonymous Patient
+                                                {% else %}{{ review.patient.get_full_name|default:"A Patient" }}{% endif %}
+                                            </h4>
+                                            <span class="text-xs text-gray-500">{{ review.created_at|date:"M d, Y" }}</span>
                                         </div>
-                                        <div class="flex items-center">
+                                        <div class="flex items-center text-yellow-400 my-1">
                                             {% for i in "12345" %}
-                                                {% if forloop.counter <= review.rating %}
-                                                    <i class="fas fa-star text-yellow-400 text-sm"></i>
-                                                {% else %}
-                                                    <i class="far fa-star text-gray-300 text-sm"></i>
-                                                {% endif %}
+                                                {% if forloop.counter <= review.rating %}<i class="fas fa-star"></i>
+                                                {% else %}<i class="far fa-star"></i>{% endif %}
                                             {% endfor %}
                                         </div>
+                                        <p class="text-gray-700">{{ review.comment|linebreaksbr }}</p>
                                     </div>
-                                    {% if review.comment %}
-                                        <p class="text-gray-700 leading-relaxed">{{ review.comment }}</p>
-                                    {% else %}
-                                        <p class="text-gray-500 italic">No comment provided</p>
-                                    {% endif %}
                                 </div>
                             {% endfor %}
                         </div>
-                        
-                        {% if total_reviews > 5 %}
-                            <div class="text-center mt-6">
-                                <a href="{% url 'doctors:doctor_detail' doctor.id %}" class="text-primary-600 hover:text-primary-700 font-medium">
-                                    View all {{ total_reviews }} reviews
-                                </a>
-                            </div>
-                        {% endif %}
                     {% else %}
-                        <div class="text-center py-12">
-                            <div class="bg-gray-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
-                                <i class="fas fa-comments text-2xl text-gray-400"></i>
-                            </div>
-                            <h3 class="text-xl font-semibold text-gray-900 mb-2">No Reviews Yet</h3>
-                            <p class="text-gray-600">Be the first to review Dr. {{ doctor.user.get_full_name }} after your appointment.</p>
+                        <div class="text-center py-10">
+                            <h3 class="text-lg font-semibold text-gray-700">No Reviews Yet</h3>
+                            <p class="text-gray-500">Be the first to leave a review for this doctor.</p>
                         </div>
                     {% endif %}
                 </div>
             </div>
 
-            <!-- Available Time Slots -->
             <div class="bg-white shadow-xl rounded-xl border border-gray-100">
-                <div class="px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-pink-50">
-                    <h2 class="text-2xl font-bold text-gray-900 flex items-center">
-                        <div class="bg-purple-100 p-3 rounded-lg mr-4">
-                            <i class="fas fa-calendar-alt text-purple-600"></i>
-                        </div>
-                        Available Time Slots
-                        {% if available_slots %}
-                            <span class="ml-3 bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">
-                                {{ available_slots|length }} slot{{ available_slots|length|pluralize }} available
-                            </span>
-                        {% endif %}
-                    </h2>
+                <div class="px-8 py-6 border-b border-gray-200">
+                    <h2 class="text-2xl font-bold text-gray-900">Available Time Slots</h2>
                 </div>
-                <div class="p-8">
-                    {% if available_slots %}
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                            {% for slot in available_slots %}
-                                <div class="border border-gray-200 rounded-lg p-4 hover:border-primary-300 hover:shadow-md transition-all duration-200">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <div class="flex items-center">
-                                            <i class="fas fa-calendar text-primary-600 mr-2"></i>
-                                            <span class="font-semibold text-gray-900">{{ slot.date|date:"M d, Y" }}</span>
-                                        </div>
-                                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">
-                                            Available
-                                        </span>
-                                    </div>
-                                    <div class="flex items-center text-gray-600 mb-3">
-                                        <i class="fas fa-clock text-gray-400 mr-2"></i>
-                                        <span>{{ slot.start_time|time:"g:i A" }} - {{ slot.end_time|time:"g:i A" }}</span>
-                                    </div>
-                                    <a href="{% url 'appointments:reserve_slot' slot.id %}" 
-                                       class="w-full bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium py-2 px-3 rounded-md transition-colors duration-200 flex items-center justify-center">
-                                        <i class="fas fa-bookmark mr-1"></i>
-                                        Book This Slot
-                                    </a>
-                                </div>
-                            {% endfor %}
-                        </div>
-                        
-                        <div class="text-center">
-                            <a href="{% url 'appointments:calendar_book' doctor.id %}" 
-                               class="inline-flex items-center bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200">
-                                <i class="fas fa-calendar-plus mr-2"></i>
-                                View Calendar & Book
-                            </a>
-                        </div>
-                    {% else %}
-                        <div class="text-center py-12">
-                            <div class="bg-gray-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
-                                <i class="fas fa-calendar text-2xl text-gray-400"></i>
-                            </div>
-                            <h3 class="text-xl font-semibold text-gray-900 mb-2">No Available Slots</h3>
-                            <p class="text-gray-600 mb-6">Dr. {{ doctor.user.get_full_name }} doesn't have any available time slots at the moment.</p>
-                            <a href="{% url 'appointments:calendar_book' doctor.id %}" 
-                               class="inline-flex items-center bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200">
-                                <i class="fas fa-calendar-plus mr-2"></i>
-                                View Calendar & Book
-                            </a>
-                        </div>
-                    {% endif %}
+                <div class="p-8 text-center">
+                    <h3 class="text-lg font-semibold text-gray-700">Scheduling Coming Soon</h3>
+                    <p class="text-gray-500">This feature is not yet implemented.</p>
                 </div>
             </div>
         </div>
