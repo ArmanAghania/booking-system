@@ -28,4 +28,6 @@ urlpatterns = [
         views.pay_appointment_view,
         name="pay_appointment",
     ),
+    path("admin-add-time-slot/<int:doctor_id>/", views.admin_add_time_slot_view, name="admin_add_time_slot"),
+
 ]

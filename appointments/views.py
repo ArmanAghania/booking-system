@@ -1,14 +1,16 @@
+from calendar import weekday
+
 from django.db import transaction
 from django.http import HttpResponse, JsonResponse
 from django.utils.dateparse import parse_date
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from doctors.models import Doctor
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.views.decorators.http import require_http_methods
 from .models import TimeSlot, Appointment
-from .forms import AppointmentForm
+from .forms import AppointmentForm, AdminAddTimeSlot
 
 
 @login_required
@@ -202,3 +204,37 @@ def calendar_book_view(request, doctor_id):
         "end_date": end_date,
     }
     return render(request, "appointments/calendar_book.html", context)
+
+
+def admin_add_time_slot_view(request, doctor_id):
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+
+    if request.method == "POST":
+        form = AdminAddTimeSlot(request.POST)
+        if form.is_valid():
+            date = form.cleaned_data['date']
+            start_times = form.cleaned_data['start_time']
+
+            start_date = date
+            end_date = datetime(date.year, 12, 31).date()
+            weekday = start_date.weekday()
+
+            current_date = start_date
+            while current_date <= end_date:
+                if current_date.weekday() == weekday:
+                    for start in start_times:
+                        start = datetime.strptime(start, "%H:%M:%S").time()
+                        end = (datetime.combine(current_date, start) + timedelta(minutes=15)).time()
+                        TimeSlot.objects.get_or_create(
+                            doctor=doctor,
+                            date=current_date,
+                            start_time=start,
+                            end_time=end
+                        )
+                current_date += timedelta(days=1)
+
+            return redirect("appointments:appointment_list")
+    else:
+        form = AdminAddTimeSlot()
+
+    return render(request, "appointments/admin_add_time_slot.html", {"form": form, "doctor": doctor})
