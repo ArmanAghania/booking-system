@@ -1,0 +1,420 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Time Slot Management - {{ doctor.user.get_full_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 1px;
+        background-color: #e5e7eb;
+        border: 1px solid #e5e7eb;
+    }
+    .calendar-day {
+        background-color: white;
+        min-height: 120px;
+        padding: 8px;
+        position: relative;
+    }
+    .calendar-day.other-month {
+        background-color: #f9fafb;
+        color: #9ca3af;
+    }
+    .calendar-day.today {
+        background-color: #dbeafe;
+    }
+    .time-slot-item {
+        font-size: 0.7rem;
+        padding: 2px 4px;
+        margin: 1px 0;
+        border-radius: 3px;
+        background-color: #3b82f6;
+        color: white;
+        display: block;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .time-slot-item.booked {
+        background-color: #ef4444;
+    }
+    .time-slot-item.available {
+        background-color: #10b981;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        if (e.altKey) {
+            if (e.key === 'ArrowLeft') {
+                // Alt + Left Arrow = Previous Month
+                window.location.href = '?year={{ prev_year }}&month={{ prev_month }}';
+            } else if (e.key === 'ArrowRight') {
+                // Alt + Right Arrow = Next Month
+                window.location.href = '?year={{ next_year }}&month={{ next_month }}';
+            } else if (e.key === 't' || e.key === 'T') {
+                // Alt + T = Today
+                window.location.href = '?';
+            }
+        }
+    });
+    
+    // Add tooltips for keyboard shortcuts
+    const prevBtn = document.querySelector('a[href*="prev_year"]');
+    const nextBtn = document.querySelector('a[href*="next_year"]');
+    const todayBtn = document.querySelector('a[href="?"]');
+    
+    if (prevBtn) prevBtn.title = 'Previous Month (Alt + ←)';
+    if (nextBtn) nextBtn.title = 'Next Month (Alt + →)';
+    if (todayBtn) todayBtn.title = 'Go to Today (Alt + T)';
+});
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Time Slot Management</h1>
+                <p class="text-lg text-gray-600 mt-2">Manage time slots for Dr. {{ doctor.user.get_full_name }}</p>
+            </div>
+            <div class="flex space-x-3">
+                <a href="{% url 'doctors:doctor_detail' doctor.id %}" 
+                   class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Doctor
+                </a>
+                <a href="{% url 'appointments:admin_add_time_slot' doctor.id %}" 
+                   class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Quick Add Slots
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Calendar Preview -->
+        <div class="lg:col-span-2">
+            <div class="bg-white shadow-lg rounded-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-calendar-alt mr-2"></i>Calendar Preview
+                </h2>
+                
+                <!-- Calendar Navigation -->
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-4">
+                        <a href="?year={{ prev_year }}&month={{ prev_month }}" 
+                           class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg transition-colors">
+                            <i class="fas fa-chevron-left mr-1"></i>Previous
+                        </a>
+                        
+                        <h3 class="text-lg font-medium text-gray-700">
+                            {{ current_month_name }} {{ current_year }}
+                        </h3>
+                        
+                        <a href="?year={{ next_year }}&month={{ next_month }}" 
+                           class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg transition-colors">
+                            Next<i class="fas fa-chevron-right ml-1"></i>
+                        </a>
+                        
+                        {% if not is_current_month %}
+                            <a href="?" 
+                               class="bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-2 rounded-lg transition-colors">
+                                <i class="fas fa-calendar-day mr-1"></i>Today
+                            </a>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Month/Year Selector -->
+                    <div class="flex items-center space-x-2">
+                        <form method="get" class="flex items-center space-x-2">
+                            <select name="month" class="border border-gray-300 rounded px-2 py-1 text-sm" onchange="this.form.submit()">
+                                {% for value, name in month_options %}
+                                    <option value="{{ value }}" {% if value == current_month %}selected{% endif %}>{{ name }}</option>
+                                {% endfor %}
+                            </select>
+                            
+                            <select name="year" class="border border-gray-300 rounded px-2 py-1 text-sm" onchange="this.form.submit()">
+                                {% for value, name in year_options %}
+                                    <option value="{{ value }}" {% if value == current_year %}selected{% endif %}>{{ name }}</option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Calendar Grid -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <!-- Day Headers -->
+                    <div class="grid grid-cols-7 bg-gray-100">
+                        <div class="font-semibold text-center py-2 text-sm border-r border-gray-200">Mon</div>
+                        <div class="font-semibold text-center py-2 text-sm border-r border-gray-200">Tue</div>
+                        <div class="font-semibold text-center py-2 text-sm border-r border-gray-200">Wed</div>
+                        <div class="font-semibold text-center py-2 text-sm border-r border-gray-200">Thu</div>
+                        <div class="font-semibold text-center py-2 text-sm border-r border-gray-200">Fri</div>
+                        <div class="font-semibold text-center py-2 text-sm border-r border-gray-200">Sat</div>
+                        <div class="font-semibold text-center py-2 text-sm">Sun</div>
+                    </div>
+                    
+                    <!-- Calendar Days -->
+                    {% for week in calendar_days %}
+                        <div class="grid grid-cols-7">
+                            {% for day_data in week %}
+                                {% if day_data.day %}
+                                    <div class="bg-white border border-gray-200 p-2 min-h-[120px] {% if day_data.is_today %}bg-blue-50 border-blue-300{% endif %}">
+                                        <div class="font-semibold text-sm mb-2 text-gray-800">{{ day_data.day }}</div>
+                                        <div class="space-y-1">
+                                            {% for slot in day_data.slots %}
+                                                <div class="time-slot-item {% if slot.appointment %}booked{% else %}available{% endif %}">
+                                                    {{ slot.start_time|time:"H:i" }}-{{ slot.end_time|time:"H:i" }}
+                                                    {% if slot.appointment %}
+                                                        <i class="fas fa-user ml-1"></i>
+                                                    {% endif %}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="bg-gray-50 border border-gray-200 p-2 min-h-[120px]">
+                                        <!-- Empty day -->
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Legend -->
+                <div class="mt-4 flex items-center space-x-4 text-sm">
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 bg-green-500 rounded mr-2"></div>
+                        <span>Available</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 bg-red-500 rounded mr-2"></div>
+                        <span>Booked</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Management Panel -->
+        <div class="space-y-6">
+            <!-- Bulk Create Form -->
+            <div class="bg-white shadow-lg rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-plus-circle mr-2"></i>Bulk Create Time Slots
+                </h3>
+                
+                <form method="post" action="{% url 'appointments:bulk_create_time_slots' doctor.id %}">
+                    {% csrf_token %}
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                            {{ bulk_form.start_date }}
+                            {% if bulk_form.start_date.errors %}
+                                <p class="text-red-500 text-xs mt-1">{{ bulk_form.start_date.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                            {{ bulk_form.end_date }}
+                            {% if bulk_form.end_date.errors %}
+                                <p class="text-red-500 text-xs mt-1">{{ bulk_form.end_date.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Days of Week</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                {% for choice in bulk_form.weekdays %}
+                                    <label class="flex items-center text-sm">
+                                        {{ choice.tag }}
+                                        <span class="ml-2">{{ choice.choice_label }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                            {% if bulk_form.weekdays.errors %}
+                                <p class="text-red-500 text-xs mt-1">{{ bulk_form.weekdays.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Time Slots</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                {% for choice in bulk_form.start_time %}
+                                    <label class="flex items-center text-sm">
+                                        {{ choice.tag }}
+                                        <span class="ml-2">{{ choice.choice_label }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                            {% if bulk_form.start_time.errors %}
+                                <p class="text-red-500 text-xs mt-1">{{ bulk_form.start_time.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors">
+                        <i class="fas fa-plus mr-2"></i>Create Time Slots
+                    </button>
+                </form>
+            </div>
+
+            <!-- Delete Day Form -->
+            <div class="bg-white shadow-lg rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-trash mr-2"></i>Delete Day Slots
+                </h3>
+                
+                <form method="post" action="{% url 'appointments:delete_day_slots' doctor.id %}">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Date to Clear</label>
+                        {{ delete_day_form.date }}
+                        {% if delete_day_form.date.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ delete_day_form.date.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg transition-colors">
+                        <i class="fas fa-trash mr-2"></i>Delete All Slots for Date
+                    </button>
+                </form>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="bg-white shadow-lg rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-chart-bar mr-2"></i>Quick Stats
+                </h3>
+                
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Total Slots:</span>
+                        <span class="font-semibold">{{ total_slots }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Available:</span>
+                        <span class="font-semibold text-green-600">{{ available_slots }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Booked:</span>
+                        <span class="font-semibold text-red-600">{{ booked_slots }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Time Slots List -->
+    <div class="mt-8 bg-white shadow-lg rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-900">
+                <i class="fas fa-list mr-2"></i>All Time Slots
+            </h2>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for slot in time_slots %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {{ slot.date|date:"M d, Y" }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ slot.start_time|time:"H:i" }} - {{ slot.end_time|time:"H:i" }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if slot.appointment %}
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                                        Booked
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                        Available
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {% if slot.appointment %}
+                                    {{ slot.appointment.patient.get_full_name|default:slot.appointment.patient.username }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                {% if not slot.appointment %}
+                                    <form method="post" action="{% url 'appointments:delete_time_slot' slot.id %}" class="inline">
+                                        {% csrf_token %}
+                                        <button type="submit" 
+                                                class="text-red-600 hover:text-red-900"
+                                                onclick="return confirm('Are you sure you want to delete this time slot?')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <span class="text-gray-400">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                                No time slots found for the next 3 months.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if time_slots.has_other_pages %}
+            <div class="px-6 py-4 border-t border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div class="text-sm text-gray-700">
+                        Showing {{ time_slots.start_index }} to {{ time_slots.end_index }} of {{ time_slots.paginator.count }} results
+                    </div>
+                    <div class="flex space-x-2">
+                        {% if time_slots.has_previous %}
+                            <a href="?page=1" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded">First</a>
+                            <a href="?page={{ time_slots.previous_page_number }}" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded">Previous</a>
+                        {% endif %}
+                        
+                        <span class="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded">
+                            Page {{ time_slots.number }} of {{ time_slots.paginator.num_pages }}
+                        </span>
+                        
+                        {% if time_slots.has_next %}
+                            <a href="?page={{ time_slots.next_page_number }}" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded">Next</a>
+                            <a href="?page={{ time_slots.paginator.num_pages }}" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded">Last</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -93,7 +93,11 @@
                         {% if user.user_type == 'admin' %}
                             <a href="{% url 'appointments:admin_add_time_slot' doctor.id %}" 
                                class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center">
-                                <i class="fas fa-comment mr-2"></i>Add Time Slot
+                                <i class="fas fa-plus-circle mr-2"></i>Quick Add Slots
+                            </a>
+                            <a href="{% url 'appointments:time_slot_management' doctor.id %}" 
+                               class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center">
+                                <i class="fas fa-cogs mr-2"></i>Manage Time Slots
                             </a>
                         {% endif %}
                     </div>
@@ -103,8 +107,11 @@
 
         <div class="lg:col-span-2 space-y-8">
             <div class="bg-white shadow-xl rounded-xl border border-gray-100">
-                <div class="px-8 py-6 border-b border-gray-200">
-                    <h2 class="text-2xl font-bold text-gray-900">About Dr. {{ doctor.user.first_name }}</h2>
+                <div class="px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+                        <i class="fas fa-user-md text-blue-600 mr-3"></i>
+                        About Dr. {{ doctor.user.first_name }}
+                    </h2>
                 </div>
                 <div class="p-8">
                     <p class="text-gray-700 leading-relaxed">{{ doctor.bio }}</p>
@@ -112,8 +119,11 @@
             </div>
 
             <div class="bg-white shadow-xl rounded-xl border border-gray-100">
-                <div class="px-8 py-6 border-b border-gray-200">
-                    <h2 class="text-2xl font-bold text-gray-900">Patient Reviews ({{ doctor.total_reviews }})</h2>
+                <div class="px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-yellow-50 to-orange-50">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+                        <i class="fas fa-star text-yellow-600 mr-3"></i>
+                        Patient Reviews ({{ doctor.total_reviews }})
+                    </h2>
                 </div>
                 <div class="p-8">
                     {% if reviews %}
@@ -153,12 +163,60 @@
             </div>
 
             <div class="bg-white shadow-xl rounded-xl border border-gray-100">
-                <div class="px-8 py-6 border-b border-gray-200">
-                    <h2 class="text-2xl font-bold text-gray-900">Available Time Slots</h2>
+                <div class="px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-green-50 to-emerald-50">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+                        <i class="fas fa-calendar-alt text-green-600 mr-3"></i>
+                        Available Time Slots
+                    </h2>
                 </div>
-                <div class="p-8 text-center">
-                    <h3 class="text-lg font-semibold text-gray-700">Scheduling Coming Soon</h3>
-                    <p class="text-gray-500">This feature is not yet implemented.</p>
+                <div class="p-8">
+                    {% if available_slots %}
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {% for slot in available_slots %}
+                                <div class="bg-primary-50 border border-primary-200 rounded-lg p-4 hover:bg-primary-100 transition-colors">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="text-sm font-medium text-primary-800">
+                                            {{ slot.date|date:"M d, Y" }}
+                                        </div>
+                                        <div class="text-xs text-primary-600 bg-primary-100 px-2 py-1 rounded-full">
+                                            Available
+                                        </div>
+                                    </div>
+                                    <div class="text-lg font-semibold text-primary-900">
+                                        {{ slot.start_time|time:"g:i A" }} - {{ slot.end_time|time:"g:i A" }}
+                                    </div>
+                                    <div class="mt-3">
+                                        <a href="{% url 'appointments:reserve_slot' slot.id %}" 
+                                           class="w-full bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center justify-center">
+                                            <i class="fas fa-calendar-plus mr-2"></i>
+                                            Book This Slot
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mt-6 text-center">
+                            <a href="{% url 'appointments:calendar_book' doctor.id %}" 
+                               class="inline-flex items-center bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg font-medium transition-colors duration-200">
+                                <i class="fas fa-calendar-alt mr-2"></i>
+                                View Full Calendar
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-10">
+                            <div class="bg-gray-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-calendar-times text-2xl text-gray-400"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-700 mb-2">No Available Slots</h3>
+                            <p class="text-gray-500 mb-4">No time slots are currently available for the next 6 days.</p>
+                            <a href="{% url 'appointments:calendar_book' doctor.id %}" 
+                               class="inline-flex items-center bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200">
+                                <i class="fas fa-calendar-alt mr-2"></i>
+                                Check Full Calendar
+                            </a>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
