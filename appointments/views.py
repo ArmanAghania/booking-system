@@ -23,6 +23,27 @@ def appointment_list(request):
     """
     appointments = Appointment.objects.all()
     return render(request, "appointments/appointment_list.html", {"appointments": appointments})
+    """Show appointments for the logged-in patient, or all appointments for admin users."""
+    from doctors.mixins import is_admin_user
+
+    if is_admin_user(request.user):
+        # Admin users see all appointments
+        appointments = Appointment.objects.select_related(
+            "patient", "doctor", "doctor__user", "time_slot"
+        ).order_by("-created_at")
+        is_admin_view = True
+    else:
+        # Regular users see only their own appointments
+        appointments = Appointment.objects.filter(patient=request.user).order_by(
+            "-created_at"
+        )
+        is_admin_view = False
+
+    return render(
+        request,
+        "appointments/appointment_list.html",
+        {"appointments": appointments, "is_admin_view": is_admin_view},
+    )
 
 
 @login_required
@@ -56,6 +77,11 @@ def reserve_slot_view(request, slot_id):
         # CORRECTED THIS REDIRECT
         return redirect("appointments:book", doctor_id=slot.doctor.id)
 
+    # Check if slot already has an appointment
+    if hasattr(slot, "appointment"):
+        messages.error(request, " This time slot is already booked.")
+        return redirect("appointments:book", doctor_id=slot.doctor.id)
+
     if request.method == "POST":
         form = AppointmentForm(request.POST)
         if form.is_valid():
@@ -65,6 +91,14 @@ def reserve_slot_view(request, slot_id):
                     if not slot.is_available:
                         messages.error(request, "Sorry, this time slot has just been booked by someone else.")
                         # CORRECTED THIS REDIRECT
+                        return redirect("appointments:book", doctor_id=slot.doctor.id)
+
+                    # Double-check that slot doesn't have an appointment
+                    if hasattr(slot, "appointment"):
+                        messages.error(
+                            request,
+                            " Sorry, this time slot has just been booked by someone else.",
+                        )
                         return redirect("appointments:book", doctor_id=slot.doctor.id)
 
                     appointment = form.save(commit=False)
@@ -97,6 +131,26 @@ def reserve_slot_view(request, slot_id):
                     messages.success(request,
                                      "Your appointment has been submitted successfully! A confirmation has been sent to your email.")
                     return redirect("appointments:booking_confirmation", appointment_id=appointment.id)
+                    # Send appointment reservation email
+                    from .services import AppointmentEmailService
+
+                    try:
+                        AppointmentEmailService.send_reservation_confirmation(
+                            appointment
+                        )
+                    except Exception as e:
+                        # Don't fail the appointment creation if email fails
+                        print(f"Warning: Could not send appointment email: {str(e)}")
+
+                    messages.success(
+                        request,
+                        " Appointment created! Please complete payment to confirm your booking.",
+                    )
+                    return redirect(
+                        "payments:process_payment",
+                        appointment_id=appointment.id,
+                    )
+
             except Exception as e:
                 messages.error(request, f"An error occurred: {str(e)}")
                 # CORRECTED THIS REDIRECT
@@ -108,8 +162,56 @@ def reserve_slot_view(request, slot_id):
 
 @login_required
 def booking_confirmation_view(request, appointment_id):
+
     appointment = get_object_or_404(Appointment, id=appointment_id, patient=request.user)
     return render(request, "appointments/confirmation.html", {"appointment": appointment})
+
+    appointment = get_object_or_404(
+        Appointment, id=appointment_id, patient=request.user
+    )
+    return render(
+        request, "appointments/confirmation.html", {"appointment": appointment}
+    )
+
+
+@login_required
+def cancel_appointment_view(request, appointment_id):
+    """Cancel an appointment."""
+    appointment = get_object_or_404(
+        Appointment, id=appointment_id, patient=request.user
+    )
+
+    if request.method == "POST":
+        # Only allow cancellation of pending or confirmed appointments
+        if appointment.status in ["PENDING", "CONFIRMED"]:
+            with transaction.atomic():
+                # Update appointment status
+                appointment.status = "CANCELLED"
+                appointment.save()
+
+                # Make the time slot available again
+                appointment.time_slot.is_available = True
+                appointment.time_slot.save()
+
+                # Send cancellation email
+                from .services import AppointmentEmailService
+
+                try:
+                    AppointmentEmailService.send_cancellation_notification(appointment)
+                except Exception as e:
+                    # Don't fail the cancellation if email fails
+                    print(f"Warning: Could not send cancellation email: {str(e)}")
+
+                messages.success(request, "Appointment cancelled successfully.")
+                return redirect("appointments:appointment_list")
+        else:
+            messages.error(request, "This appointment cannot be cancelled.")
+            return redirect("appointments:appointment_list")
+
+    return render(
+        request, "appointments/cancel_appointment.html", {"appointment": appointment}
+    )
+
 
 
 @login_required

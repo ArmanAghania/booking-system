@@ -90,16 +90,26 @@ WSGI_APPLICATION = "booking_system.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": config("DB_NAME"),
-        "USER": config("DB_USER"),
-        "PASSWORD": config("DB_PASSWORD"),
-        "HOST": config("DB_HOST"),
-        "PORT": config("DB_PORT"),
+# Database configuration with Docker support
+import os
+
+if os.getenv("DATABASE_URL"):
+    # Use DATABASE_URL if available (for Docker)
+    import dj_database_url
+
+    DATABASES = {"default": dj_database_url.parse(os.getenv("DATABASE_URL"))}
+else:
+    # Use individual config variables
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": config("DB_NAME", default="booking_system"),
+            "USER": config("DB_USER", default="booking_user"),
+            "PASSWORD": config("DB_PASSWORD", default="booking_password_2024"),
+            "HOST": config("DB_HOST", default="localhost"),
+            "PORT": config("DB_PORT", default="5432"),
+        }
     }
-}
 
 
 # Password validation
@@ -171,6 +181,7 @@ EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
 EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="noreply@bookingsystem.com")
+SITE_URL = config("SITE_URL", default="http://localhost:8000")
 
 # OTP Configuration
 OTP_EXPIRY_MINUTES = 15
