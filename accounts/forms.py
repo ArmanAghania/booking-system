@@ -212,7 +212,7 @@ class PasswordResetRequestForm(forms.Form):
         max_length=254,
         widget=forms.EmailInput(
             attrs={
-                "class": "form-control",
+                "class": "appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm",
                 "placeholder": "Enter your email address",
                 "autocomplete": "email",
             }
@@ -241,7 +241,7 @@ class PasswordResetForm(forms.Form):
         min_length=6,
         widget=forms.TextInput(
             attrs={
-                "class": "form-control",
+                "class": "appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm",
                 "placeholder": "Enter 6-digit code",
                 "maxlength": "6",
                 "pattern": "[0-9]{6}",
@@ -254,7 +254,7 @@ class PasswordResetForm(forms.Form):
     new_password1 = forms.CharField(
         widget=forms.PasswordInput(
             attrs={
-                "class": "form-control",
+                "class": "appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm",
                 "placeholder": "Enter new password",
                 "autocomplete": "new-password",
             }
@@ -265,7 +265,7 @@ class PasswordResetForm(forms.Form):
     new_password2 = forms.CharField(
         widget=forms.PasswordInput(
             attrs={
-                "class": "form-control",
+                "class": "appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm",
                 "placeholder": "Confirm new password",
                 "autocomplete": "new-password",
             }
