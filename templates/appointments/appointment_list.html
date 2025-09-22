@@ -1,0 +1,135 @@
+{% extends "base/base.html" %}
+
+{% block title %}My Appointments - Booking System{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">My Appointments</h1>
+        <p class="text-lg text-gray-600 mt-2">View and manage your upcoming appointments</p>
+    </div>
+
+    {% if appointments %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for appointment in appointments %}
+                <div class="bg-white shadow-xl rounded-xl border border-gray-100 hover:shadow-2xl transition-shadow duration-300">
+                    <!-- Appointment Header -->
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-primary-50 to-blue-50">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-gray-900">
+                                {{ appointment.time_slot.date|date:"M d, Y" }}
+                            </h3>
+                            <span class="px-3 py-1 rounded-full text-xs font-medium
+                                {% if appointment.status == 'PENDING' %}bg-yellow-100 text-yellow-800
+                                {% elif appointment.status == 'CONFIRMED' %}bg-green-100 text-green-800
+                                {% elif appointment.status == 'CANCELLED' %}bg-red-100 text-red-800
+                                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                {{ appointment.status }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Appointment Details -->
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <!-- Doctor Info -->
+                            <div class="flex items-center">
+                                <div class="bg-primary-100 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                                    <i class="fas fa-user-md text-primary-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Dr. {{ appointment.doctor.user.get_full_name }}</h4>
+                                    <p class="text-sm text-gray-600">{{ appointment.doctor.specialty.name }}</p>
+                                </div>
+                            </div>
+
+                            <!-- Time Info -->
+                            <div class="flex items-center">
+                                <div class="bg-green-100 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                                    <i class="fas fa-clock text-green-600"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-gray-900">
+                                        {{ appointment.time_slot.start_time|time:"g:i A" }} - {{ appointment.time_slot.end_time|time:"g:i A" }}
+                                    </p>
+                                    <p class="text-sm text-gray-600">{{ appointment.time_slot.date|date:"l, F d, Y" }}</p>
+                                </div>
+                            </div>
+
+                            <!-- Fee Info -->
+                            <div class="flex items-center">
+                                <div class="bg-purple-100 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                                    <i class="fas fa-dollar-sign text-purple-600"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-gray-900">${{ appointment.consultation_fee }}</p>
+                                    <p class="text-sm text-gray-600">Consultation Fee</p>
+                                </div>
+                            </div>
+
+                            <!-- Notes -->
+                            {% if appointment.notes %}
+                                <div class="bg-gray-50 rounded-lg p-3">
+                                    <p class="text-sm text-gray-700">
+                                        <strong>Notes:</strong> {{ appointment.notes }}
+                                    </p>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="mt-6 flex space-x-3">
+                            {% if appointment.status == 'PENDING' %}
+                                <a href="{% url 'appointments:pay_appointment' appointment.id %}" 
+                                   class="flex-1 bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center">
+                                    <i class="fas fa-credit-card mr-2"></i>Pay Now
+                                </a>
+                            {% elif appointment.status == 'CONFIRMED' %}
+                                <button class="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg font-medium cursor-default">
+                                    <i class="fas fa-check mr-2"></i>Confirmed
+                                </button>
+                            {% elif appointment.status == 'CANCELLED' %}
+                                <button class="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg font-medium cursor-default">
+                                    <i class="fas fa-times mr-2"></i>Cancelled
+                                </button>
+                            {% elif appointment.status == 'COMPLETED' %}
+                                <button class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg font-medium cursor-default">
+                                    <i class="fas fa-check-circle mr-2"></i>Completed
+                                </button>
+                            {% else %}
+                                <button class="flex-1 bg-gray-600 text-white py-2 px-4 rounded-lg font-medium cursor-default">
+                                    <i class="fas fa-info mr-2"></i>{{ appointment.status }}
+                                </button>
+                            {% endif %}
+                            
+                            {% if appointment.status == 'PENDING' or appointment.status == 'CONFIRMED' %}
+                                <a href="{% url 'appointments:cancel_appointment' appointment.id %}" 
+                                   class="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center">
+                                    <i class="fas fa-times mr-2"></i>Cancel
+                                </a>
+                            {% else %}
+                                <button class="bg-gray-400 text-white py-2 px-4 rounded-lg font-medium cursor-not-allowed">
+                                    <i class="fas fa-times mr-2"></i>Cancel
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-12">
+            <div class="bg-gray-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-calendar-times text-2xl text-gray-400"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">No Appointments Yet</h3>
+            <p class="text-gray-600 mb-6">You haven't booked any appointments yet.</p>
+            <a href="{% url 'doctors:doctor_list' %}" 
+               class="inline-flex items-center bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200">
+                <i class="fas fa-search mr-2"></i>Find Doctors
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

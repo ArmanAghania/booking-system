@@ -1,0 +1,76 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% load socialaccount %}
+
+{% block title %}Login with Google - Booking System{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <div>
+            <div class="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-primary-100">
+                <i class="fab fa-google text-primary-600 text-xl"></i>
+            </div>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                Login with Google
+            </h2>
+            <p class="mt-2 text-center text-sm text-gray-600">
+                Quick and secure access to your account
+            </p>
+        </div>
+
+        <div class="mt-8 space-y-6">
+            <!-- Google Login Button -->
+            <div>
+                <a href="{% provider_login_url 'google' %}" 
+                   class="group relative w-full flex justify-center py-3 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition duration-150 ease-in-out">
+                    <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                        <i class="fab fa-google text-red-500"></i>
+                    </span>
+                    Continue with Google
+                </a>
+            </div>
+
+            <!-- Divider -->
+            <div class="relative">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-300" />
+                </div>
+                <div class="relative flex justify-center text-sm">
+                    <span class="px-2 bg-gray-50 text-gray-500">Or</span>
+                </div>
+            </div>
+
+            <!-- Regular Login Link -->
+            <div class="text-center">
+                <a href="{% url 'accounts:login' %}" 
+                   class="font-medium text-primary-600 hover:text-primary-500">
+                    Login with email and password
+                </a>
+            </div>
+
+            <!-- Sign Up Link -->
+            <div class="text-center">
+                <p class="text-sm text-gray-600">
+                    Don't have an account? 
+                    <a href="{% url 'accounts:register' %}" 
+                       class="font-medium text-primary-600 hover:text-primary-500">
+                        Create one here
+                    </a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Benefits -->
+        <div class="mt-8 bg-blue-50 border border-blue-200 rounded-md p-4">
+            <h3 class="text-sm font-medium text-blue-800 mb-2">Benefits of Google Login:</h3>
+            <ul class="text-sm text-blue-700 space-y-1">
+                <li>• Quick and secure access</li>
+                <li>• No need to remember passwords</li>
+                <li>• Automatic profile data import</li>
+                <li>• One-click account creation</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

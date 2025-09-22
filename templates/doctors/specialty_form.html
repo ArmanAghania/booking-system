@@ -1,0 +1,171 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - Booking System{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-6">
+        <ol class="flex items-center space-x-2 text-sm text-gray-500">
+            <li><a href="{% url 'doctors:specialty_list' %}" class="hover:text-primary-600">Specialties</a></li>
+            {% if specialty %}
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 mx-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    <a href="{% url 'doctors:specialty_detail' specialty.id %}" class="hover:text-primary-600">{{ specialty.name }}</a>
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 mx-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    Edit
+                </li>
+            {% else %}
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 mx-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                    Create
+                </li>
+            {% endif %}
+        </ol>
+    </nav>
+
+    <!-- Form Card -->
+    <div class="bg-white shadow-xl rounded-xl border border-gray-100">
+        <div class="px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-primary-50 to-blue-50">
+            <h1 class="text-3xl font-bold text-gray-900 flex items-center">
+                <div class="bg-primary-100 p-3 rounded-lg mr-4">
+                    <i class="fas fa-stethoscope text-primary-600 text-xl"></i>
+                </div>
+                {{ title }}
+            </h1>
+            <p class="text-gray-600 mt-2 text-lg">
+                {% if specialty %}
+                    Update the medical specialty information
+                {% else %}
+                    Create a new medical specialty for the booking system
+                {% endif %}
+            </p>
+        </div>
+        
+        <div class="p-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- Specialty Information Section -->
+                <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+                        <div class="bg-primary-100 p-2 rounded-lg mr-3">
+                            <i class="fas fa-info-circle text-primary-600"></i>
+                        </div>
+                        Specialty Information
+                    </h3>
+                    
+                    <div class="space-y-6">
+                        <!-- Name -->
+                        <div>
+                            <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                {{ form.name.label }}
+                                <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.name }}
+                            {% if form.name.help_text %}
+                                <p class="mt-1 text-sm text-gray-500">{{ form.name.help_text }}</p>
+                            {% endif %}
+                            {% if form.name.errors %}
+                                <div class="mt-1 text-sm text-red-600">
+                                    {% for error in form.name.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Description -->
+                        <div>
+                            <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                {{ form.description.label }}
+                                <span class="text-red-500">*</span>
+                            </label>
+                            {{ form.description }}
+                            {% if form.description.help_text %}
+                                <p class="mt-1 text-sm text-gray-500">{{ form.description.help_text }}</p>
+                            {% endif %}
+                            {% if form.description.errors %}
+                                <div class="mt-1 text-sm text-red-600">
+                                    {% for error in form.description.errors %}
+                                        <p>{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex justify-between items-center pt-6 border-t border-gray-200">
+                    <a href="{% url 'doctors:specialty_list' %}" class="bg-gray-500 hover:bg-gray-600 text-white px-8 py-3 rounded-lg text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg flex items-center">
+                        <i class="fas fa-times mr-2"></i>Cancel
+                    </a>
+                    <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 rounded-lg text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg flex items-center">
+                        <i class="fas fa-save mr-2"></i>{{ submit_text }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Help Text -->
+    <div class="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 shadow-sm">
+        <h4 class="text-lg font-semibold text-blue-900 mb-4 flex items-center">
+            <div class="bg-blue-100 p-2 rounded-lg mr-3">
+                <i class="fas fa-info-circle text-blue-600"></i>
+            </div>
+            Important Notes
+        </h4>
+        <ul class="text-sm text-blue-800 space-y-2">
+            <li class="flex items-start">
+                <i class="fas fa-check-circle text-blue-600 mt-1 mr-3 flex-shrink-0"></i>
+                Specialty names must be unique across the system
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-check-circle text-blue-600 mt-1 mr-3 flex-shrink-0"></i>
+                Provide a clear and descriptive name for the specialty
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-check-circle text-blue-600 mt-1 mr-3 flex-shrink-0"></i>
+                Include detailed description to help patients understand the specialty
+            </li>
+            {% if specialty %}
+                <li class="flex items-start">
+                    <i class="fas fa-exclamation-triangle text-yellow-600 mt-1 mr-3 flex-shrink-0"></i>
+                    Changing the name may affect existing doctor profiles
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Add Tailwind classes to form fields
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const inputs = form.querySelectorAll('input, select, textarea');
+    
+    inputs.forEach(input => {
+        if (input.tagName === 'SELECT') {
+            input.classList.add('block', 'w-full', 'border', 'border-gray-300', 'rounded-lg', 'px-4', 'py-3', 'focus:outline-none', 'focus:ring-2', 'focus:ring-primary-500', 'focus:border-primary-500', 'shadow-sm');
+        } else if (input.tagName === 'TEXTAREA') {
+            input.classList.add('block', 'w-full', 'border', 'border-gray-300', 'rounded-lg', 'px-4', 'py-3', 'focus:outline-none', 'focus:ring-2', 'focus:ring-primary-500', 'focus:border-primary-500', 'shadow-sm', 'resize-none');
+        } else {
+            input.classList.add('block', 'w-full', 'border', 'border-gray-300', 'rounded-lg', 'px-4', 'py-3', 'focus:outline-none', 'focus:ring-2', 'focus:ring-primary-500', 'focus:border-primary-500', 'shadow-sm');
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base/base.html" %}
+{% load humanize %}
+
+{% block title %}Transactions{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto mt-10 bg-white shadow rounded-lg p-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">Wallet Transactions</h2>
+
+    {% if transactions %}
+        <div class="overflow-x-auto">
+            <table class="min-w-full border border-gray-200 rounded-lg overflow-hidden">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">User</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Amount</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Type</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Description</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Balance After</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Appointment</th>
+                        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Date</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    {% for tx in transactions %}
+                        <tr>
+                            <td class="px-4 py-2 text-sm text-gray-600">{{ tx.user_id }}</td>
+                            <td class="px-4 py-2 text-sm font-medium {% if tx.amount > 0 %}text-green-600{% else %}text-red-600{% endif %}">
+                                {{ tx.amount|floatformat:0|intcomma }} $
+                            </td>
+                            <td class="px-4 py-2 text-sm text-gray-600">
+                                {{ tx.get_transaction_type_display }}
+                            </td>
+                            <td class="px-4 py-2 text-sm text-gray-600">{{ tx.description }}</td>
+                            <td class="px-4 py-2 text-sm text-gray-600">{{ tx.balance_after|floatformat:0|intcomma }} $</td>
+                            {% if tx.appointment_id %}
+                                <td class="px-4 py-2 text-sm text-gray-600">{{ tx.appointment_id }}</td>
+                            {% else %}
+                                <td class="px-4 py-2 text-sm text-gray-600">Whidout Appointment</td>
+                            {% endif %}
+                            <td class="px-4 py-2 text-sm text-gray-500">
+                                {{ tx.created_at|date:"Y-m-d H:i" }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="text-gray-500">No transactions available.</p>
+    {% endif %}
+</div>
+{% endblock %}
