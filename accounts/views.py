@@ -82,12 +82,9 @@ def get_redirect_url(request):
     if not request.user.is_authenticated:
         return reverse("core:home")
 
-    if request.user.user_type == "admin":
-        return reverse("admin:index")
-    elif request.user.user_type == "doctor":
-        return reverse("core:home")
-    else:  # patient
-        return reverse("core:home")
+    # All users go to the main application home page
+    # Admin users can access Django admin via /admin/ URL if needed
+    return reverse("core:home")
 
 
 class RegistrationView(TemplateView):

@@ -1,0 +1,14 @@
+Appointment Confirmed!
+
+Hello {{ patient_name }},
+
+Your appointment has been successfully booked. Here are the details:
+
+- Doctor: Dr. {{ doctor_name }}
+- Specialty: {{ doctor_specialty }}
+- Date: {{ appointment_date }}
+- Time: {{ appointment_time }}
+
+Thank you for choosing our service.
+
+This is an automated message. Please do not reply.

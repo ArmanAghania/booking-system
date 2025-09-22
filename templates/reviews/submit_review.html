@@ -1,4 +1,4 @@
-{% extends 'base/base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 {% load widget_tweaks %}
 
@@ -7,72 +7,38 @@
 {% block content %}
 <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <div class="bg-white shadow-xl rounded-xl border border-gray-100">
-        <div class="px-8 py-6 border-b border-gray-200 bg-gradient-to-r from-primary-50 to-blue-50">
-            <h1 class="text-3xl font-bold text-gray-900 flex items-center">
-                <div class="bg-primary-100 p-3 rounded-lg mr-4">
-                    <i class="fas fa-star text-primary-600 text-xl"></i>
-                </div>
-                Submit a Review
-            </h1>
-            <p class="text-gray-600 mt-2 text-lg">
-                Share your experience about your appointment with <strong>Dr. {{ appointment.doctor.user.get_full_name }}</strong>.
-            </p>
+        <div class="px-8 py-6 border-b border-gray-200">
+            <h1 class="text-3xl font-bold text-gray-900">Submit a Review</h1>
+            <p class="text-gray-600 mt-2">For your appointment with <strong>Dr. {{ appointment.doctor.user.get_full_name }}</strong>.</p>
         </div>
 
         <div class="p-8">
             <form method="post" class="space-y-8">
                 {% csrf_token %}
-
-                <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                <div class="rounded-xl p-6 border border-gray-200">
                     <label class="block text-lg font-semibold text-gray-800 mb-4 text-center">
-                        {{ form.rating.label }}
-                        <span class="text-red-500">*</span>
+                        {{ form.rating.label }} <span class="text-red-500">*</span>
                     </label>
-
                     <div id="rating-stars" class="flex justify-center items-center space-x-2 text-4xl text-gray-300 cursor-pointer">
-                        <i class="far fa-star" data-value="1"></i>
-                        <i class="far fa-star" data-value="2"></i>
-                        <i class="far fa-star" data-value="3"></i>
-                        <i class="far fa-star" data-value="4"></i>
-                        <i class="far fa-star" data-value="5"></i>
+                        {% for i in "12345" %}<i class="far fa-star" data-value="{{ i }}"></i>{% endfor %}
                     </div>
-
-                    <div class="hidden">
-                        {{ form.rating }}
-                    </div>
-                    {% if form.rating.errors %}
-                        <div class="mt-2 text-center">
-                            {% for error in form.rating.errors %}
-                                <p class="text-sm text-red-600">{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
+                    <div class="hidden">{{ form.rating }}</div>
+                    {% if form.rating.errors %}<div class="mt-2 text-center"><p class="text-sm text-red-600">{{ form.rating.errors.0 }}</p></div>{% endif %}
                 </div>
 
-                <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                    <h3 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                        <div class="bg-primary-100 p-2 rounded-lg mr-3">
-                            <i class="fas fa-comment-dots text-primary-600"></i>
-                        </div>
-                        Your Review (Optional)
-                    </h3>
-                    {% render_field form.comment class="block w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 shadow-sm" %}
-                    {% if form.comment.errors %}
-                        <div class="mt-1 text-sm text-red-600">
-                            {% for error in form.comment.errors %}
-                                <p>{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
+                <div class="rounded-xl p-6 border border-gray-200">
+                    <label for="{{ form.comment.id_for_label }}" class="text-xl font-semibold text-gray-900 mb-4">{{ form.comment.label }}</label>
+                    {% render_field form.comment class="block w-full border border-gray-300 rounded-lg px-4 py-3" %}
+                </div>
+
+                <div class="flex items-center space-x-3 rounded-xl p-6 border border-gray-200">
+                    {% render_field form.is_anonymous %}
+                    <label for="{{ form.is_anonymous.id_for_label }}" class="font-medium text-gray-700">{{ form.is_anonymous.label }}</label>
                 </div>
 
                 <div class="flex justify-between items-center pt-8 border-t border-gray-200">
-                    <a href="{{ request.META.HTTP_REFERER|default:'/' }}" class="bg-gray-500 hover:bg-gray-600 text-white px-8 py-3 rounded-lg text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg flex items-center">
-                        <i class="fas fa-times mr-2"></i>Cancel
-                    </a>
-                    <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 rounded-lg text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg flex items-center">
-                        <i class="fas fa-paper-plane mr-2"></i>Submit Review
-                    </button>
+                    <a href="{{ request.META.HTTP_REFERER|default:'/' }}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-8 py-3 rounded-lg font-medium">Cancel</a>
+                    <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 rounded-lg font-medium">Submit Review</button>
                 </div>
             </form>
         </div>
@@ -84,53 +50,44 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const starsContainer = document.getElementById('rating-stars');
-    const stars = starsContainer.querySelectorAll('i');
-    const ratingRadios = document.querySelectorAll('input[name="rating"]');
+    if (!starsContainer) return;
 
-    function updateStars(ratingValue) {
+    const stars = starsContainer.querySelectorAll('i');
+    let clickedRating = 0;
+
+    function updateStarsUI(ratingValue) {
         stars.forEach(star => {
             const starValue = parseInt(star.dataset.value);
-            if (starValue <= ratingValue) {
-                star.classList.remove('far', 'text-gray-300');
-                star.classList.add('fas', 'text-yellow-400');
-            } else {
-                star.classList.remove('fas', 'text-yellow-400');
-                star.classList.add('far', 'text-gray-300');
-            }
+            star.className = starValue <= ratingValue ? 'fas fa-star text-yellow-400' : 'far fa-star text-gray-300';
         });
+    }
+
+    const initiallyCheckedRadio = document.querySelector('input[name="rating"]:checked');
+    if (initiallyCheckedRadio) {
+        clickedRating = parseInt(initiallyCheckedRadio.value);
+        updateStarsUI(clickedRating);
     }
 
     starsContainer.addEventListener('click', function(e) {
         if (e.target.tagName === 'I') {
-            const value = e.target.dataset.value;
-            // Find the corresponding radio button and check it
+            const value = parseInt(e.target.dataset.value);
+            clickedRating = value;
             const radio = document.querySelector(`input[name="rating"][value="${value}"]`);
-            if (radio) {
-                radio.checked = true;
-                updateStars(value);
-            }
+            if (radio) radio.checked = true;
+            updateStarsUI(clickedRating);
         }
     });
 
     starsContainer.addEventListener('mouseover', function(e) {
         if (e.target.tagName === 'I') {
-            const hoverValue = e.target.dataset.value;
-            updateStars(hoverValue);
+            const hoverValue = parseInt(e.target.dataset.value);
+            updateStarsUI(hoverValue);
         }
     });
 
     starsContainer.addEventListener('mouseout', function() {
-        // On mouse out, revert to the selected rating
-        const checkedRadio = document.querySelector('input[name="rating"]:checked');
-        const selectedValue = checkedRadio ? checkedRadio.value : 0;
-        updateStars(selectedValue);
+        updateStarsUI(clickedRating);
     });
-
-    // Initialize stars based on form errors (if user submitted and failed)
-    const checkedRadio = document.querySelector('input[name="rating"]:checked');
-    if (checkedRadio) {
-        updateStars(checkedRadio.value);
-    }
 });
 </script>
 {% endblock %}

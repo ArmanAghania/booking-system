@@ -177,6 +177,17 @@ def process_payment(request, appointment_id):
                     appointment.status = "CONFIRMED"
                     appointment.save()
 
+                    # Send payment confirmation email
+                    from appointments.services import AppointmentEmailService
+
+                    try:
+                        AppointmentEmailService.send_payment_confirmation(appointment)
+                    except Exception as e:
+                        # Don't fail the payment if email fails
+                        print(
+                            f"Warning: Could not send payment confirmation email: {str(e)}"
+                        )
+
                     messages.success(
                         request,
                         "Payment successful! Your appointment has been confirmed.",
@@ -203,6 +214,17 @@ def process_payment(request, appointment_id):
 
                 appointment.status = "CONFIRMED"
                 appointment.save()
+
+                # Send payment confirmation email
+                from appointments.services import AppointmentEmailService
+
+                try:
+                    AppointmentEmailService.send_payment_confirmation(appointment)
+                except Exception as e:
+                    # Don't fail the payment if email fails
+                    print(
+                        f"Warning: Could not send payment confirmation email: {str(e)}"
+                    )
 
                 messages.success(
                     request, "Payment successful! Your appointment has been confirmed."
