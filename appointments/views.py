@@ -1,15 +1,15 @@
-# appointments/views.py
+from calendar import weekday
 
 from django.db import transaction
 from django.http import HttpResponse, HttpResponseForbidden
 from django.utils.dateparse import parse_date
-from datetime import date
+from datetime import date, timedelta, datetime
 from doctors.models import Doctor
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from .models import TimeSlot, Appointment
-from .forms import AppointmentForm
+from .forms import AppointmentForm, AdminAddTimeSlot
 
 # Imports needed for sending email
 from django.core.mail import EmailMultiAlternatives
@@ -227,5 +227,68 @@ def update_appointment_status(request, appointment_id):
         appointment.save()
         messages.success(request, f"Appointment status updated to {appointment.get_status_display()}.")
     else:
+        selected_date = date.today()
+
+    # Get available slots for the selected date
+    available_slots = TimeSlot.objects.filter(
+        doctor=doctor, is_available=True, date=selected_date
+    ).order_by("start_time")
+
+    # Get dates with available slots for the calendar
+    start_date = date.today()
+    end_date = start_date + timedelta(days=30)  # Show next 30 days
+
+    dates_with_slots = (
+        TimeSlot.objects.filter(
+            doctor=doctor, is_available=True, date__gte=start_date, date__lte=end_date
+        )
+        .values_list("date", flat=True)
+        .distinct()
+        .order_by("date")
+    )
+
+    context = {
+        "doctor": doctor,
+        "selected_date": selected_date,
+        "available_slots": available_slots,
+        "dates_with_slots": dates_with_slots,
+        "start_date": start_date,
+        "end_date": end_date,
+    }
+    return render(request, "appointments/calendar_book.html", context)
+
+
+def admin_add_time_slot_view(request, doctor_id):
+    doctor = get_object_or_404(Doctor, id=doctor_id)
+
+    if request.method == "POST":
+        form = AdminAddTimeSlot(request.POST)
+        if form.is_valid():
+            date = form.cleaned_data['date']
+            start_times = form.cleaned_data['start_time']
+
+            start_date = date
+            end_date = datetime(date.year, 12, 31).date()
+            weekday = start_date.weekday()
+
+            current_date = start_date
+            while current_date <= end_date:
+                if current_date.weekday() == weekday:
+                    for start in start_times:
+                        start = datetime.strptime(start, "%H:%M:%S").time()
+                        end = (datetime.combine(current_date, start) + timedelta(minutes=15)).time()
+                        TimeSlot.objects.get_or_create(
+                            doctor=doctor,
+                            date=current_date,
+                            start_time=start,
+                            end_time=end
+                        )
+                current_date += timedelta(days=1)
+
+            return redirect("appointments:appointment_list")
+    else:
+        form = AdminAddTimeSlot()
+
+    return render(request, "appointments/admin_add_time_slot.html", {"form": form, "doctor": doctor})
         messages.error(request, "Invalid status selected.")
     return redirect('appointments:appointment_list')

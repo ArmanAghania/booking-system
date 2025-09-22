@@ -90,9 +90,12 @@
                            class="w-full bg-primary-600 hover:bg-primary-700 text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center">
                            <i class="fas fa-calendar mr-2"></i>Book Appointment
                         </a>
-                        <button class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg" disabled>
-                            <i class="fas fa-comment mr-2"></i>Send Message (Coming Soon)
-                        </button>
+                        {% if user.user_type == 'admin' %}
+                            <a href="{% url 'appointments:admin_add_time_slot' doctor.id %}" 
+                               class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center">
+                                <i class="fas fa-comment mr-2"></i>Add Time Slot
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>

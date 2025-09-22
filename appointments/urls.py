@@ -15,22 +15,16 @@ urlpatterns = [
         views.booking_confirmation_view,
         name="booking_confirmation",
     ),
+    path(
+        "cancel/<int:appointment_id>/",
+        views.cancel_appointment_view,
+        name="cancel_appointment",
+    ),
+    path(
+        "pay/<int:appointment_id>/",
+        views.pay_appointment_view,
+        name="pay_appointment",
+    ),
+    path("admin-add-time-slot/<int:doctor_id>/", views.admin_add_time_slot_view, name="admin_add_time_slot"),
 
-    # The following URLs point to views that do not exist yet.
-    # I am commenting them out to fix the error.
-    # You can uncomment them later when you build these features.
-
-    # path(
-    #     "calendar-book/<int:doctor_id>/", views.calendar_book_view, name="calendar_book"
-    # ),
-    # path(
-    #     "cancel/<int:appointment_id>/",
-    #     views.cancel_appointment_view,
-    #     name="cancel_appointment",
-    # ),
-    # path(
-    #     "pay/<int:appointment_id>/",
-    #     views.pay_appointment_view,
-    #     name="pay_appointment",
-    # ),
 ]
